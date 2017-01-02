@@ -1,0 +1,12 @@
+[ ] Mobile friendly
+[ ] Replace the Yahoo API
+    [ ] Browser location API
+    [ ] Dropdown of major cities
+[ ] Reduce data hit (currently ~500kb)
+ 	[ ] Replace some images
+ 	[ ] Reduce/minify JS
+[ ] Retina canvas
+[ ] Add more content
+ 	[ ] Latest sunrise
+ 	[ ] Earliest sunset
+[ ] Get rid of the landing page
