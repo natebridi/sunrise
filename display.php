@@ -7,13 +7,36 @@ $locationData = array();
 $currentYear = filter_input(INPUT_POST, "year", FILTER_SANITIZE_MAGIC_QUOTES);
 $locationPost = filter_input(INPUT_POST, "location", FILTER_SANITIZE_ENCODED);
 
+/*
 $c = curl_init();
 curl_setopt($c, CURLOPT_URL, "http://where.yahooapis.com/geocode?q=" . $locationPost . "&flags=TR&appid=pkvUxZPV34F8z2hrkk9aVpbD.czCeo2mi.23h5GAbEddtfgHKwObU1yQxZo-");
 curl_setopt($c, CURLOPT_RETURNTRANSFER, 1);
 $output = curl_exec($c);
 curl_close($c);
-
 $xml = simplexml_load_string($output);
+*/
+
+// Here is a sample XML response since the Yahoo API no longer works
+$xml_sample = <<<XML
+<?xml version="1.0" encoding="UTF-8"?>
+<document>  
+  <Error>0</Error>
+  <Result precision="address"> 
+     <latitude>40.440624</latitude> 
+     <quality>20</quality>
+     <longitude>-79.995888</longitude>  
+     <address>701 FIRST AVE</address>  
+     <city>Pittsburgh</city>  
+     <state>PA</state>  
+     <timezone>America/New_York</timezone>
+     <zip>15206</zip>  
+     <country>US</country>  
+  </Result>  
+</document>  
+XML;
+
+$xml = simplexml_load_string($xml_sample);
+
 
 $error = (int) $xml->Error;    // 0 means no error
 $quality = (int) $xml->Result[0]->quality;
@@ -43,6 +66,7 @@ if ($error == 0 && $quality > 19 && $timecode != "") {
 
 $i = 1;
 
+date_default_timezone_set($timecode);
 $startDate = $currentYear.'-01-01';
 $endDate = (int)$currentYear+1 . '-01-01';
 
