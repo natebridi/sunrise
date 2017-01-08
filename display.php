@@ -5,82 +5,35 @@ $locationData = array();
 
 
 $currentYear = filter_input(INPUT_POST, "year", FILTER_SANITIZE_MAGIC_QUOTES);
-$locationPost = filter_input(INPUT_POST, "location", FILTER_SANITIZE_ENCODED);
-
-/*
-$c = curl_init();
-curl_setopt($c, CURLOPT_URL, "http://where.yahooapis.com/geocode?q=" . $locationPost . "&flags=TR&appid=pkvUxZPV34F8z2hrkk9aVpbD.czCeo2mi.23h5GAbEddtfgHKwObU1yQxZo-");
-curl_setopt($c, CURLOPT_RETURNTRANSFER, 1);
-$output = curl_exec($c);
-curl_close($c);
-$xml = simplexml_load_string($output);
-*/
-
-// Here is a sample XML response since the Yahoo API no longer works
-$xml_sample = <<<XML
-<?xml version="1.0" encoding="UTF-8"?>
-<document>  
-  <Error>0</Error>
-  <Result precision="address"> 
-     <latitude>40.440624</latitude> 
-     <quality>20</quality>
-     <longitude>-79.995888</longitude>  
-     <address>701 FIRST AVE</address>  
-     <city>Pittsburgh</city>  
-     <state>PA</state>  
-     <timezone>America/New_York</timezone>
-     <zip>15206</zip>  
-     <country>US</country>  
-  </Result>  
-</document>  
-XML;
-
-$xml = simplexml_load_string($xml_sample);
-
-
-$error = (int) $xml->Error;    // 0 means no error
-$quality = (int) $xml->Result[0]->quality;
-$timecode = (string) $xml->Result[0]->timezone;
-
-if ($error == 0 && $quality > 19 && $timecode != "") {
-     $latitude = (float) $xml->Result[0]->latitude;
-     $longitude = -(float) $xml->Result[0]->longitude;      // make negative for NOAA formula
-     $name = (string) $xml->Result[0]->city;
-     $state = (string) $xml->Result[0]->state;
-     $country = (string) $xml->Result[0]->country;
-
-     $locationData = array('name' => $name,
-                      'state' => $state,
-                      'country' => $country,
-                      'latitude' => $latitude,
-                      'longitude' => $longitude,
-                      'error' => $error,
-                      'tz' => $timecode,
-                      'quality' => $quality);
-} else {
-     $locationData = array('error' => $error, 'quality' => $quality, 'tz' => $timecode);
-     $data = array('location' => $locationData);
-     echo json_encode($data);
-     exit();
-}
+$tz = filter_input(INPUT_POST, "tz", FILTER_SANITIZE_MAGIC_QUOTES);
+$latitude = filter_input(INPUT_POST, "lat", FILTER_SANITIZE_ENCODED);
+$longitude = filter_input(INPUT_POST, "lng", FILTER_SANITIZE_ENCODED);
 
 $i = 1;
 
-date_default_timezone_set($timecode);
+// NOAA formula uses inverse longitude
+$longitude = -$longitude;
+
+//$timezone = 'America/New_York';
+date_default_timezone_set($tz);
+
 $startDate = $currentYear.'-01-01';
 $endDate = (int)$currentYear+1 . '-01-01';
 
 $currentDay = $startDate;
 
 $sunData = array();
+$i = 0;
 
 while ($currentDay != $endDate) {
-     $i = dayOfYear(date("d", strtotime($currentDay)), date("m", strtotime($currentDay)), date("Y", strtotime($currentDay)));
+     $i++;
      
      $jd = julianDay($i, 1, $currentYear);
-     
-     $tz = new DateTime($currentDay, new DateTimeZone($timecode));
-     $offset = $tz->getOffset() / 3600;
+
+     // Have to get the timezone each "day" to properly account for 
+     // daylight savings time
+     $temp_tz = new DateTime($currentDay, new DateTimeZone($tz));
+     $offset = $temp_tz->getOffset();
      
      $rise = sunriseUTC($jd, $latitude, $longitude);
      if ($rise == 9999 || $rise == 8888) {
@@ -90,10 +43,10 @@ while ($currentDay != $endDate) {
      }
      
      if ($rise != 9999 && $rise != 8888) {
-          $rise += 60.0 * $offset;
+          $rise += $offset / 60;
      }
      if ($set != 9999 && $set != 8888) {
-          $set += 60.0 * $offset;
+          $set += $offset / 60;
      }
      
      if (abs($set - $rise) > 1440) {

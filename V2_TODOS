@@ -1,6 +1,7 @@
 [ ] Mobile friendly
 [ ] Replace the Yahoo API
     [ ] Browser location API
+    [ ] Detect timezone in browser
     [ ] Dropdown of major cities
 [ ] Reduce data hit (currently ~500kb)
  	[ ] Replace some images
