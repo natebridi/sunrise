@@ -1,13 +1,22 @@
 [ ] Mobile friendly
 [ ] Replace the Yahoo API
-    [ ] Browser location API
-    [ ] Detect timezone in browser
+    [X] Browser location API
+    [X] Detect timezone in browser
+    [ ] Fallbacks for failure of API
     [ ] Dropdown of major cities
 [ ] Reduce data hit (currently ~500kb)
  	[ ] Replace some images
  	[ ] Reduce/minify JS
+ 	[ ] Reduce size of the returned time object
 [ ] Retina canvas
 [ ] Add more content
  	[ ] Latest sunrise
  	[ ] Earliest sunset
-[ ] Get rid of the landing page
+[X] Get rid of the landing page
+[ ] Cool loading graphic
+    [ ] Earth going around sun
+    [ ] Earth with light/dark rotation
+[ ] Code improvement
+	[ ] Clean up PHP
+	[ ] Look to remove JQuery?
+	[ ] General JS refactor

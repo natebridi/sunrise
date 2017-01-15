@@ -6,6 +6,7 @@
 <title>Day:light - A simple sunset-sunrise calculator and visualizer</title>
 <link rel="stylesheet" type="text/css" href="styles/base.css" />
 <link rel="stylesheet" type="text/css" href="style.css" />
+<link rel="stylesheet" type="text/css" href="styles/style.css" />
 <script type="text/javascript">
 
   // var _gaq = _gaq || [];
