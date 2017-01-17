@@ -7,6 +7,10 @@ var latitude;
 var longitude;
 var offset;
 var t;
+var monthNames = ["January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December"
+];
+var dayNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
 
 
@@ -38,6 +42,49 @@ function init() {
 		
 	opts.twelvehour = true;				// set display to 12-hour clock times (false is 24 hour clock)
 	opts.monthLines = true;				// turns on the months line grid
+
+	// Preprocess data
+	//		Move values into properties for easier handling
+	// 		Times are returned each day as an array [rise, set, month, day, dayOfWeek]
+	//		Generate friendly strings for display
+
+	d.times.map(function(day, i) {
+		var values = day;
+		day = {
+			rise: 		values[0],
+			set: 		values[1],
+			month: 		values[2],
+			day: 		values[3],
+			dayOfWeek: 	values[4]
+		};
+
+		var mins,
+			hrs;
+
+		if (day.set == 8888 || day.set == 9999) {
+			day.setf24 = 'No sunrise';
+			day.setf = 'No sunrise';
+		} else {
+			mins = (Math.floor(day.set % 60) < 10) ? '0' + Math.floor(day.set % 60) : Math.floor(day.set % 60);
+			hrs = Math.floor(day.set / 60);
+
+			day.setf24 = hrs + ':' + mins;
+			day.setf = (hrs > 12) ? (hrs - 12) + ':' + mins + ' pm' : hrs + ':' + mins + ' am';
+		}
+
+		if (day.rise == 8888 || day.rise == 9999) {
+			day.risef24 = 'No sunrise';
+			day.risef = 'No sunrise';
+		} else {
+			mins = (Math.floor(day.rise % 60) < 10) ? '0' + Math.floor(day.rise % 60) : Math.floor(day.rise % 60);
+			hrs = Math.floor(day.rise / 60);
+
+			day.risef24 = hrs + ':' + mins;
+			day.risef = (hrs > 12) ? (hrs - 12) + ':' + mins + ' pm' : hrs + ':' + mins + ' am';
+		}
+
+		d.times[i] = day;
+	});
 	
 	switchTo12Hr();
 	
@@ -66,7 +113,7 @@ function init() {
 			}
 			
 			dayLength = (d.times[findDay(bar.position)].set - d.times[findDay(bar.position)].rise)/60;
-			dayHTML = "<h2>" + d.times[findDay(bar.position)].day + "</h2> Hours of sunlight: " + dayLength.toFixed(2);
+			dayHTML = "<h2>" + dayNames[d.times[findDay(bar.position)].dayOfWeek] + ', ' + monthNames[d.times[findDay(bar.position)].month] + ' ' + d.times[findDay(bar.position)].day + ' ' + activeYear + "</h2> Hours of sunlight: " + dayLength.toFixed(2);
 			$("#day-display").empty().html(dayHTML);
 			
 			fillInTimes();
@@ -312,19 +359,23 @@ function loadHeader() {
 	
 	shortestTime = (d.times[shortest].set-d.times[shortest].rise)/60;
 	longestTime = (d.times[longest].set-d.times[longest].rise)/60;
-	
+
 	if (opts.twelvehour) {
-		$("#earliest").html("<strong>Earliest sunrise:</strong> " + d.times[earliest].shortdate + " (" + d.times[earliest].risef + ")");
-		$("#latest").html("<strong>Latest sunset:</strong> " + d.times[latest].shortdate + " (" + d.times[latest].setf + ")");
+		$("#earliest").html("<strong>Earliest sunrise:</strong> " + shortDate(earliest) + " (" + d.times[earliest].setf + ")");
+		$("#latest").html("<strong>Latest sunset:</strong> " + shortDate(latest) + " (" + d.times[latest].setf + ")");
 	} else {
-		$("#earliest").html("<strong>Earliest sunrise:</strong> " + d.times[earliest].shortdate + " (" + d.times[earliest].risef24 + ")");
-		$("#latest").html("<strong>Latest sunset:</strong> " + d.times[latest].shortdate + " (" + d.times[latest].setf24 + ")");
+		$("#earliest").html("<strong>Earliest sunrise:</strong> " + shortDate(earliest) + " (" + d.times[earliest].risef24 + ")");
+		$("#latest").html("<strong>Latest sunset:</strong> " + shortDate(latest) + " (" + d.times[latest].setf24 + ")");
 	}
-	$("#shortest").html("<strong>Shortest day:</strong> " + d.times[shortest].shortdate + " (" + shortestTime.toFixed(2) + " hours)");
-	$("#longest").html("<strong>Longest day:</strong> " + d.times[longest].shortdate + " (" + longestTime.toFixed(2) + " hours)");
+	$("#shortest").html("<strong>Shortest day:</strong> " + shortDate(shortest) + " (" + shortestTime.toFixed(2) + " hours)");
+	$("#longest").html("<strong>Longest day:</strong> " + shortDate(longest) + " (" + longestTime.toFixed(2) + " hours)");
 	$("#average").html("<strong>Average daylight:</strong> " + average.toFixed(2) + " hours");
 	
 	$("#active-year").html(activeYear);
+}
+
+function shortDate(index) {
+	return monthNames[d.times[index].month] + ' ' + d.times[index].day;
 }
 
 // resets the left and top offsets when the window resizes
@@ -500,8 +551,8 @@ function drawGrid(ctx) {
 			ctx.stroke();
 			ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
 			ctx.font = 'bold 11px Arial';
-			var w = ctx.measureText(d.times[i-1].month);
-			ctx.fillText(d.times[i-1].month, i*c.xscale - daysInMonth*c.xscale/2 - w.width/2, 20);
+			var w = ctx.measureText(monthNames[d.times[i-1].month]);
+			ctx.fillText(monthNames[d.times[i-1].month], i*c.xscale - daysInMonth*c.xscale/2 - w.width/2, 20);
 			daysInMonth = 0;
 			ctx.closePath();
 		}

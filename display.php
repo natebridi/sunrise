@@ -67,46 +67,23 @@ while ($currentDay != $endDate) {
      if ($set > 1440  && $set != 9999 && $set != 8888) {
           $set = 1440;
      }
-     
-     if ($rise != 9999 && $rise != 8888) {
-          if ($rise > 720) {
-               $formattedRise12 = floor($rise/60)-12 . ':' . str_pad(floor($rise%60), 2, "0", STR_PAD_LEFT) . ' pm';
-          } else {
-               $formattedRise12 = floor($rise/60) . ':' . str_pad(floor($rise%60), 2, "0", STR_PAD_LEFT) . ' am';
-          }
-          $formattedRise24 = floor($rise/60) . ':' . str_pad(floor($rise%60), 2, "0", STR_PAD_LEFT);
-     } else {
-          $formattedRise12 = "No sunrise";
-          $formattedRise24 = "No sunrise";
-     }
-     
-     if ($set != 9999 && $set != 8888) {
-          if ($set > 720) {
-               $formattedSet12 = floor($set/60)-12 . ':' . str_pad(floor($set%60), 2, "0", STR_PAD_LEFT) . ' pm';
-          } else {
-               $formattedSet12 = floor($set/60) . ':' . str_pad(floor($set%60), 2, "0", STR_PAD_LEFT) . ' am';
-          }
-          $formattedSet24 = floor($set/60) . ':' . str_pad(floor($set%60), 2, "0", STR_PAD_LEFT);
-     } else {
-          $formattedSet12 = "No sunset";
-          $formattedSet24 = "No sunset";
-     }
           
-     $formattedDate = date("l, F j, Y", strtotime($currentDay));
-     $formattedShortDate = date("F j", strtotime($currentDay));
-     
-     $monthString = date("F", strtotime($currentDay));
+     // Month as a number from 0 to 11
+     $monthNum = date("n", strtotime($currentDay)) - 1;
 
-     
-     $sunData[] = array('rise' => $rise,
-                        'set' => $set,
-                        'risef' => $formattedRise12,
-                        'setf' => $formattedSet12,
-                        'risef24' => $formattedRise24,
-                        'setf24' => $formattedSet24,
-                        'month' => $monthString,
-                        'day' => $formattedDate,
-                        'shortdate' => $formattedShortDate);
+     // Day as a number from 1 to 31
+     $dayNum = (int)date("j", strtotime($currentDay));
+
+     // Day of week as number from 0 (Monday) to 6
+     $dayOfWeek = date("N", strtotime($currentDay)) - 1;
+
+     $sunData[] = array(
+                    round($rise, 2),
+                    round($set, 2),
+                    $monthNum,
+                    $dayNum,
+                    $dayOfWeek
+                  );
      
      $currentDay = date("Y-m-d", strtotime("+1 day", strtotime($currentDay)));
 }
