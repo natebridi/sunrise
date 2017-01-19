@@ -29,6 +29,9 @@
      <img src="daylight-header.png" alt="Daylight: A simple sunset-sunrise calculator and visualizer">
      <a href="#" id="change">Change year or location</a>
 </div>
+<select id="city">
+ <option>Current Location</option>
+</select>
 <div id="page-wrapper">
      <div id="header"><span id="location-name"></span>
           <div id="location-stats">
