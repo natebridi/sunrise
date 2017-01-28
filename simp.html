@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>SVG Simplify</title>
+</head>
+<body>
+
+<canvas id="canvas" width="800" height="500"></canvas>
+
+<script src="http://mourner.github.io/simplify-js/simplify.js"></script>
+<script>
+	var precision = 3,
+		path = "1147.4666,-512.4193 L 1147.5534,-512.43041 L 1147.4427,-512.96384 L 1148.1467,-513.60194 L 1148.5623,-514.53817 L 1149.812,-514.02942 L 1150.3841,-514.10323 L 1150.9979,-514.73092 L 1151.541,-515.34981 L 1152.1801,-517.04868 L 1152.6557,-518.72739 L 1154.0556,-519.24689 L 1155.2933,-519.62363 L 1156.461,-519.99167 L 1157.1841,-520.08735 L 1158.1769,-519.57694 L 1159.5606,-518.99586 L 1161.4443,-518.48088 L 1162.7418,-518.77557 L 1164.4976,-518.67249 L 1167.2336,-516.98441 L 1167.6995,-517.56751 L 1168.5273,-518.01532 L 1170.0163,-516.58904 L 1170.7969,-517.33759 L 1170.6293,-519.27904 L 1169.2156,-521.69712 L 1168.4246,-523.00187 L 1167.3589,-524.69872 L 1165.7958,-526.45004 L 1164.4885,-528.20476 L 1163.3853,-529.67997 L 1162.0764,-531.64799 L 1161.4282,-532.63259 L 1161.0839,-533.65896 L 1159.2248,-535.6416 L 1160.4672,-534.00337 L 1161.4271,-532.50973 L 1161.8983,-531.28607 L 1160.9909,-532.14299 L 1159.1879,-533.48972 L 1157.4304,-534.8726 L 1155.6824,-537.29793 L 1154.9087,-537.4055 L 1153.5982,-539.00131 L 1152.4753,-540.34679 L 1151.4093,-540.93399 L 1150.5492,-540.81473 L 1149.7114,-540.05602 L 1148.8997,-540.67832 L 1147.861,-542.03395 L 1146.3528,-543.29344 L 1144.984,-543.83774 L 1143.4293,-545.39545 L 1143.5146,-544.36793 L 1143.1054,-543.88344 L 1141.8915,-544.66286 L 1140.3365,-546.34165 L 1139.3119,-547.66568 L 1137.2825,-548.94124 L 1136.3452,-549.0248 L 1136.2195,-548.06133 L 1135.5602,-547.6651 L 1134.5773,-548.0479 L 1133.6609,-547.18985 L 1132.4009,-547.01674 L 1132.6503,-546.01503 L 1133.8044,-545.74654 L 1135.1422,-544.8021 L 1133.8794,-544.62929 L 1133.2055,-543.68435 L 1134.0475,-541.17958 L 1134.3616,-539.85183 L 1134.2418,-539.31807 L 1134.2443,-538.4965 L 1134.4732,-537.37067 L 1135.3686,-535.57331 L 1136.193,-533.88791 L 1136.9372,-532.40457 L 1137.8753,-530.22349 L 1138.0343,-530.20703 L 1137.5482,-532.05975 L 1137.1401,-533.92298 L 1139.3044,-532.29362 L 1138.9852,-531.30718 L 1138.3349,-530.14619 L 1139.7199,-527.78231 L 1140.4992,-525.63304 L 1141.0483,-523.7882 L 1141.4909,-522.44662 L 1142.0974,-520.60924 L 1142.744,-518.83782 L 1144.5868,-516.49057 L 1145.98,-514.41894 L 1147.4666,-512.4193 z";
+
+		var originalPaths = convertToPoints(path),
+			simpleSvg = '';
+
+		// var canvas = document.getElementById('canvas');
+		// var ctx = canvas.getContext('2d');
+		// ctx.translate(800, 0);
+
+		// ctx.strokeStyle = '#f53';
+		// ctx.lineWidth = 2;
+		// ctx.lineCap = 'round';
+		// ctx.lineJoin = 'round';
+
+		// ctx.clearRect(-800, 0, 1800, 1400);
+
+		// ctx.beginPath();
+
+		// for (i = 0, len = simplePath.length; i < len; i++) {
+		// 	p = simplePath[i];
+		// 	ctx.lineTo(p.x/2, p.y/2);
+		// }
+
+		// ctx.stroke();
+
+
+		originalPaths.map(function(originalPath) {
+			var simplePath = simplify(originalPath, 3, false),
+				output = [];
+
+			simplePath.map(function(p) {
+				output.push(p.x + ',' + p.y);
+			});
+			simpleSvg += 'M ' + output.join(' L ') + ' z ';
+
+			console.log('Original: ' + originalPath.length);
+			console.log('Simple: ' + simplePath.length);
+		});
+
+
+		function convertToPoints(svgPath) {
+			var fullPath = [],
+				chunks = svgPath.split('z M');
+
+			chunks.map(function(chunk) {
+				var svgPoints = chunk.split(' L '),
+					points = [];
+
+				svgPoints.map(function(svgPoint) {
+					var point = svgPoint.split(',');
+
+					points.push({
+						x: parseFloat(parseFloat(point[0]).toFixed(precision)),
+						y: parseFloat(parseFloat(point[1]).toFixed(precision))
+					});
+				});
+
+				fullPath.push(points);
+			});
+
+			return fullPath;
+		}
+
+</script>
+
+</body>
+</html>

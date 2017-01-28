@@ -19,11 +19,13 @@ function getLatLng() {
 	function success(position) {
 		var year = new Date().getFullYear(),
 			tz = jstz.determine();
-		getTimes(position.coords.latitude, position.coords.longitude, year, tz.name())
+		getTimes(position.coords.latitude, position.coords.longitude, year, tz.name());
 	}
 
 	function error() {
-		output.innerHTML = "Unable to retrieve your location";
+		var dd = document.getElementById('city');
+		dd.removeChild(dd.children[0]);
+		//output.innerHTML = "Unable to retrieve your location";
 	}
 
 	navigator.geolocation.getCurrentPosition(success, error);
@@ -75,6 +77,11 @@ function populateDropdown() {
 		"lat": 35.6964894,
 		"lng": 51.0696223,
 		"tz": "Asia/Tehran" 
+		},{
+		"name": "Vandenberg AFB",
+		"lat": 34.7428887,
+		"lng": -120.5495257,
+		"tz": "America/Los_Angeles"
 		}];
 
 	var dropdown = document.getElementById('city');
@@ -96,9 +103,49 @@ function populateDropdown() {
 			getLatLng();
 		}
 	};
+  
+
+
+
+	var svgHeight = 305;
+	var svgWidth = 500;
+
+	for (var i = 0; i < cities.length; i++) {
+
+	  // latitudes/longitudes to radians
+	  var latRadian = -(cities[i].lat * Math.PI) / 180;
+	  var lngRadian = (cities[i].lng * Math.PI) / 180;
+	  
+	  //Radians to xy cartesian coordinates
+	            var alpha = Math.acos( Math.cos(latRadian) * Math.cos( lngRadian / 2 ) );
+	            var phi_1 = Math.acos( 2 / Math.PI );
+	            function sinc(x) {
+	                if (x == 0) {
+	                    return 1;
+	                } else {
+	                    return (Math.sin(x)/x);
+	                }
+	            }
+	            var x = (svgHeight/Math.PI) * ( lngRadian * Math.cos(phi_1) + 2 * ( Math.cos(latRadian) * Math.sin(lngRadian/2) / sinc(alpha) ) ) / 2;
+	            var y = (svgHeight/Math.PI) * ( latRadian + ( Math.sin(latRadian) / sinc(alpha) )) / 2;
+	  
+	  //Re-align coordinates to center of map
+	  var lat = x + (svgWidth / 2);
+	  var lng = y + (svgHeight / 2);
+
+	  $('#map').append('<div style="width:5px;height:5px;background:#f00;position: absolute; left:' + lat + 'px;top:' + lng + 'px;border-radius:50%"></div>')
+
+	}
+
+
+
+
 }
 
 function getTimes(lat, lng, year, tz) {
+
+	document.getElementById('loading').style = 'display: flex'
+
 	var xhr = new XMLHttpRequest();
 	xhr.open('POST', 'display.php');
 	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
@@ -106,6 +153,7 @@ function getTimes(lat, lng, year, tz) {
 	    if (xhr.status === 200) {
 	        console.log(JSON.parse(xhr.responseText));
 	        d = JSON.parse(xhr.responseText);
+	        document.getElementById('loading').style = 'display: none'
 	        init();
 	        display();
 	        bindEvents();

@@ -26,21 +26,22 @@
 <div id="content">
 
 <div id="masthead">
-     <img src="daylight-header.png" alt="Daylight: A simple sunset-sunrise calculator and visualizer">
-     <a href="#" id="change">Change year or location</a>
+    <h1>Daylight: <em>A simple sunset-sunrise calculator and visualizer</em></h1>
+    <div class="select-wrap">
+      <select id="city">
+        <option>Current Location</option>
+      </select>
+    </div>
 </div>
-<select id="city">
- <option>Current Location</option>
-</select>
 <div id="page-wrapper">
-     <div id="header"><span id="location-name"></span>
+     <div id="header">
           <div id="location-stats">
-               <span class="location-data" id="profile-leadin">Statistics for <span id="active-year"></span></span>
-               <span class="location-data" id="shortest"></span>
-               <span class="location-data" id="longest"></span>
-               <span class="location-data" id="earliest"></span>
-               <span class="location-data" id="average"></span>
-               <span class="location-data" id="latest"></span>
+             <span class="location-data" id="profile-leadin">Statistics for <span id="active-year"></span></span>
+             <span class="location-data" id="shortest"></span>
+             <span class="location-data" id="longest"></span>
+             <span class="location-data" id="earliest"></span>
+             <span class="location-data" id="average"></span>
+             <span class="location-data" id="latest"></span>
           </div><!-- #location-stats -->
      </div><!-- #header -->
      
@@ -74,9 +75,17 @@
      <div id="options">
           <a href="#" class="options-button" id="goto-now">Move bar to today</a><a href="#" class="options-button" id="hour-option">24 hour</a><a href="#" class="options-button" id="month-option">Hide grid</a>
      </div><!-- #options -->
-     
 
 </div><!-- #page-wrapper -->
+</div>
+
+<div id="loading">
+  <ul>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+  </ul>
 </div>
 
 <script type="text/javascript" src="jquery.js"></script>

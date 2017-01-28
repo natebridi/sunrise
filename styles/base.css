@@ -1,4 +1,7 @@
 * {
-	font: 400 16px/1.4 Helvetica, sans-serif;
 	position: relative;
 }
+body {
+	font: 400 16px/1.4 -apple-system, BlinkMacSystemFont, sans-serif;
+}
+	
