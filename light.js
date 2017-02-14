@@ -1,16 +1,16 @@
-var canvas;
-var c = {};
-var bar, dragger;
-var opts = {};
-var days;
-var latitude;
-var longitude;
-var offset;
-var t;
-var monthNames = ["January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December"
-];
-var dayNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+var canvas,
+	ctx,
+	c = {},
+	bar, 
+	dragger,
+	opts = {},
+	days,
+	latitude,
+	longitude,
+	offset,
+	t,
+	monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ],
+	dayNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
 
 
@@ -21,14 +21,17 @@ function init() {
 	canvas.style.width = window.innerWidth + 'px';
 	canvas.style.height = 400 + 'px';
 
+	ctx = canvas.getContext('2d');
+	ctx.scale(2, 2);
 
+	days = d.times.length;
 
 	c.width = canvas.width;
 	c.height = canvas.height;
 	c.leftOffset = $("#canvas").offset().left;
 	c.topOffset = $("#canvas").offset().top;
 	c.yscale = (c.height/1440)/2;				// scale height to the canvas size (1440 is minutes in day) (divide by 2 for retina)
-	c.xscale = (c.width/d.times.length)/2;		// scale width to the canvas size (divide by 2 for retina)
+	c.xscale = (c.width/days)/2;		// scale width to the canvas size (divide by 2 for retina)
 	c.xorigin = 0;
 	c.goalxorigin = 0;
 	c.zoomed = false;
@@ -44,7 +47,6 @@ function init() {
 	bar.focusedMonth = 0;				// when zooming in, this is the month it zooms to
 	bar.updateDisplay = true;			// runs the mousemove function, updating postion of the dragger and time displays
 	
-	days = d.times.length;
 		
 	opts.twelvehour = true;				// set display to 12-hour clock times (false is 24 hour clock)
 	opts.monthLines = true;				// turns on the months line grid
@@ -197,16 +199,13 @@ function init() {
 }
 
 function display() {
+
 	if (canvas.getContext) {
-		var ctx = canvas.getContext('2d');
-		ctx.scale(2,2);
-		
-		var nativeScale = (c.width/days)/2;
-		var z = 10;			// the animation speed, lower is faster
-		var tolerance = 0.01;	// how close figures to need get to their goal before the loop quits
+		var nativeScale = (c.width/days)/2,
+			z = 10,					// the animation speed, lower is faster
+			tolerance = 0.01;		// how close figures to need get to their goal before the loop quits
 				
 		ctx.clearRect(0, 0, c.width, c.height);
-		
 		ctx.save();
 		
 		if (c.moving) {
@@ -258,39 +257,16 @@ function display() {
 		// draw the sunrise/sunset curves
 		ctx.beginPath();
 		
-		if (d.times[0].rise == 9999) {
-			ctx.moveTo(0, 720*c.yscale);
-		} else if (d.times[0].rise == 8888) {
-			ctx.moveTo(0, 0);
-		} else {
-			ctx.moveTo(0, d.times[0].rise*c.yscale);
-		}
+		ctx.moveTo(0, d.times[0].rise*c.yscale);
 		for (i = 2; i <= days; i++) {
-			if (d.times[i-1].rise == 9999) {
-				ctx.lineTo(i*c.xscale, 720*c.yscale);
-			} else if (d.times[i-1].rise == 8888) {
-				ctx.lineTo(i*c.xscale, 0);
-			} else {
-				ctx.lineTo(i*c.xscale, d.times[i-1].rise*c.yscale);
-			}
+			ctx.lineTo(i*c.xscale, d.times[i-1].rise*c.yscale);
 		}
-		if (d.times[days-1].set == 9999) {
-			ctx.lineTo(days*c.xscale, 720*c.yscale);
-		} else if (d.times[days-1].set == 8888) {
-			ctx.lineTo(days*c.xscale, 1440*c.yscale);
-		} else {
-			ctx.lineTo(days*c.xscale, d.times[days-1].set*c.yscale);
-		}
+		ctx.lineTo(days*c.xscale, d.times[days-1].set*c.yscale);
 		for (i = days-2; i >= 0; i--) {
-			if (d.times[i].set == 9999) {
-				ctx.lineTo(i*c.xscale, 720*c.yscale);
-			} else if (d.times[i].set == 8888) {
-				ctx.lineTo(i*c.xscale, 1440*c.yscale);
-			} else {
-				ctx.lineTo(i*c.xscale, d.times[i].set*c.yscale);
-			}
+			ctx.lineTo(i*c.xscale, d.times[i].set*c.yscale);
 		}
 		ctx.closePath();
+
 		ctx.fillStyle = "#7bbbd4";
 		ctx.fill();
 		
@@ -368,7 +344,7 @@ function loadHeader() {
 	longestTime = (d.times[longest].set-d.times[longest].rise)/60;
 
 	if (opts.twelvehour) {
-		$("#earliest").html("<strong>Earliest sunrise:</strong> " + shortDate(earliest) + " (" + d.times[earliest].setf + ")");
+		$("#earliest").html("<strong>Earliest sunrise:</strong> " + shortDate(earliest) + " (" + d.times[earliest].risef + ")");
 		$("#latest").html("<strong>Latest sunset:</strong> " + shortDate(latest) + " (" + d.times[latest].setf + ")");
 	} else {
 		$("#earliest").html("<strong>Earliest sunrise:</strong> " + shortDate(earliest) + " (" + d.times[earliest].risef24 + ")");

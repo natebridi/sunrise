@@ -203,10 +203,8 @@ function hourAngleSunrise($lat, $solarDec) {
 
      $HAarg = cos(deg2rad(90.833))/(cos($latRad)*cos($sdRad))-tan($latRad) * tan($sdRad);
      
-     if ($HAarg > 1) {
-          return 9999;
-     } else if ($HAarg < -1) {
-          return 8888;
+     if ($HAarg > 1 || $HAarg < -1) {
+          return -1;
      } else {
           $HA = (acos(cos(deg2rad(90.833))/(cos($latRad)*cos($sdRad))-tan($latRad) * tan($sdRad)));
           return $HA;		// in radians
@@ -221,10 +219,8 @@ function hourAngleSunset($lat, $solarDec) {
      
      $HAarg = cos(deg2rad(90.833))/(cos($latRad)*cos($sdRad))-tan($latRad) * tan($sdRad);
      
-     if ($HAarg > 1) {
-          return 9999;
-     } else if ($HAarg < -1) {
-          return 8888;
+     if ($HAarg > 1 || $HAarg < -1) {
+          return -1;
      } else {
           $HA = (acos(cos(deg2rad(90.833))/(cos($latRad)*cos($sdRad))-tan($latRad) * tan($sdRad)));
           return -$HA;		// in radians
@@ -250,8 +246,8 @@ function sunriseUTC($JD, $latitude, $longitude) {
      $hourAngle = hourAngleSunrise($latitude, $solarDec);
      
      // this means the sun never rises on this date
-     if ($hourAngle == 9999 || $hourAngle == 8888) {
-          return $hourAngle;
+     if ($hourAngle == -1) {
+          return -1;
      } else {
           $delta = $longitude - rad2deg($hourAngle);
                     
@@ -290,9 +286,8 @@ function sunsetUTC($JD, $latitude, $longitude) {
      $hourAngle = hourAngleSunset($latitude, $solarDec);
      
      // this means the sun never sets on this date
-     // this means the sun never rises on this date
-     if ($hourAngle == 9999 || $hourAngle == 8888) {
-          return $hourAngle;
+     if ($hourAngle == -1) {
+          return -1;
      } else {
           $delta = $longitude - rad2deg($hourAngle);
                

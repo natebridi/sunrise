@@ -3,11 +3,11 @@
     [X] Browser location API
     [X] Detect timezone in browser
     [ ] Fallbacks for failure of API
-    [ ] Dropdown of major cities
+    [X] Dropdown of major cities
 [ ] Reduce data hit (currently ~500kb)
- 	[ ] Replace some images
+ 	[X] Replace some images
  	[ ] Reduce/minify JS
- 	[ ] Reduce size of the returned time object
+ 	[X] Reduce size of the returned time object
 [ ] Retina canvas
 [ ] Add more content
  	[ ] Latest sunrise
@@ -20,3 +20,5 @@
 	[ ] Clean up PHP
 	[ ] Look to remove JQuery?
 	[ ] General JS refactor
+[ ] Draw a map/globe of location
+[x] Get rid of the weird 8888/9999 magic numbers

@@ -37,36 +37,28 @@ while ($currentDay != $endDate) {
      $offset = $temp_tz->getOffset();
      
      $rise = sunriseUTC($jd, $latitude, $longitude);
-     if ($rise == 9999 || $rise == 8888) {
-          $set = $rise;
+     if ($rise == -1) {
+          // sun never rises
+          $rise = 0;
+          $set = 0;
      } else {
           $set = sunsetUTC($jd, $latitude, $longitude);
-     }
-     
-     if ($rise != 9999 && $rise != 8888) {
           $rise += $offset / 60;
-     }
-     if ($set != 9999 && $set != 8888) {
-          $set += $offset / 60;
+          if ($set != -1) {
+               $set += $offset / 60;
+          }
      }
      
      if (abs($set - $rise) > 1440) {
-          $rise = 8888;
-          $set = 8888;
+          // sun never sets
+          $rise = 0;
+          $set = 1400;
      }
      
-     if ($rise > 1440 && $rise != 9999 && $rise != 8888) {
-          $rise = 1440;
-     }
-     if ($rise < 0) {
-          $rise = 0;
-     }
-     if ($set < 0) {
-          $set = 0;
-     }
-     if ($set > 1440  && $set != 9999 && $set != 8888) {
-          $set = 1440;
-     }
+     $rise = min($rise, 1440);
+     $rise = max(0, $rise);
+     $set = min($set, 1440);
+     $set = max(0, $set);
           
      // Month as a number from 0 to 11
      $monthNum = date("n", strtotime($currentDay)) - 1;
