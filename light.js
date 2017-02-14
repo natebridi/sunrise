@@ -16,13 +16,19 @@ var dayNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturda
 
 function init() {
 	canvas = document.getElementById('canvas');
-	$("#canvas").attr('height', 400);
-	c.width = $("#canvas").attr("width");
-	c.height = $("#canvas").attr("height");
+	canvas.width = window.innerWidth * 2;
+	canvas.height = 800;
+	canvas.style.width = window.innerWidth + 'px';
+	canvas.style.height = 400 + 'px';
+
+
+
+	c.width = canvas.width;
+	c.height = canvas.height;
 	c.leftOffset = $("#canvas").offset().left;
 	c.topOffset = $("#canvas").offset().top;
-	c.yscale = c.height/1440;			// scale height to the canvas size (1440 is minutes in day)
-	c.xscale = c.width/d.times.length;	// scale width to the canvas size
+	c.yscale = (c.height/1440)/2;				// scale height to the canvas size (1440 is minutes in day) (divide by 2 for retina)
+	c.xscale = (c.width/d.times.length)/2;		// scale width to the canvas size (divide by 2 for retina)
 	c.xorigin = 0;
 	c.goalxorigin = 0;
 	c.zoomed = false;
@@ -193,8 +199,9 @@ function init() {
 function display() {
 	if (canvas.getContext) {
 		var ctx = canvas.getContext('2d');
+		ctx.scale(2,2);
 		
-		var nativeScale = c.width/days;
+		var nativeScale = (c.width/days)/2;
 		var z = 10;			// the animation speed, lower is faster
 		var tolerance = 0.01;	// how close figures to need get to their goal before the loop quits
 				

@@ -10,9 +10,12 @@ var day = today.getDate();
 
 function getLatLng() {
 	var output = document.getElementById("content");
+	var dd = document.getElementById('city');
 
 	if (!navigator.geolocation){
-		output.innerHTML = "<p>Geolocation is not supported by your browser</p>";
+		dd.removeChild(dd.children[0]);
+		dd.onchange();
+		//output.innerHTML = "<p>Geolocation is not supported by your browser</p>";
 		return;
 	}
 
@@ -25,10 +28,13 @@ function getLatLng() {
 	function error() {
 		var dd = document.getElementById('city');
 		dd.removeChild(dd.children[0]);
+		dd.onchange();
 		//output.innerHTML = "Unable to retrieve your location";
 	}
 
-	navigator.geolocation.getCurrentPosition(success, error);
+	//navigator.geolocation.getCurrentPosition(success, error);
+	dd.value = 5;
+	dd.onchange();
 }
 
 function populateDropdown() {
@@ -164,7 +170,7 @@ function getTimes(lat, lng, year, tz) {
 	xhr.send('year=' + year + '&lat=' + lat + '&lng=' + lng + '&tz=' + tz);
 }
 
-getLatLng();
 populateDropdown();
+getLatLng();
 
 })();

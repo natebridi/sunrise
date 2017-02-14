@@ -5,6 +5,8 @@
 body {
      background: #fff;
      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+     margin: 0;
+     padding: 0;
      }
      
 a {
@@ -142,7 +144,6 @@ a:hover {
 
      
 #page-wrapper {
-     width: 900px;
      margin: 0 auto 2em;
      padding: 2px 0 30px;
      background-color: #faf8ed;
@@ -153,7 +154,6 @@ a:hover {
      
 #canvas-wrapper {
      margin: 0 auto;
-     width: 800px;
      position: relative;
      }
      

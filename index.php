@@ -7,19 +7,19 @@
 <link rel="stylesheet" type="text/css" href="styles/base.css" />
 <link rel="stylesheet" type="text/css" href="style.css" />
 <link rel="stylesheet" type="text/css" href="styles/style.css" />
-<script type="text/javascript">
+<!-- <script type="text/javascript">
 
-  // var _gaq = _gaq || [];
-  // _gaq.push(['_setAccount', 'UA-22258578-1']);
-  // _gaq.push(['_trackPageview']);
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-22258578-1']);
+  _gaq.push(['_trackPageview']);
 
-  // (function() {
-  //   var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-  //   ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-  //   var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-  // })();
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
 
-</script>
+</script> -->
 </head>
 <body>
 
@@ -66,7 +66,7 @@
           
      <div id="canvas-wrapper">
           <div id="clock-grid"><span class="time">3:00</span><span class="time">6:00</span><span class="time">9:00</span><span class="time">Noon</span><span class="time">3:00</span><span class="time">6:00</span><span class="time">9:00</span></div>
-          <canvas id="canvas" width="800" height="0"></canvas>
+          <canvas id="canvas"></canvas>
           <div id="scrubber"><div id="control-bar"><div id="bar-dragger"></div></div><div id="rise"></div><div id="set"></div></div>
      </div><!-- #canvas-wrapper -->
      
