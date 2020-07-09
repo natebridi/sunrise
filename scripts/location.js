@@ -44,7 +44,7 @@ function populateDropdown() {
 		"lng": 174.5852738,
 		"tz": "Pacific/Auckland" 
 		},{
-		"name": "Austin",
+		"name": "Austin, TX",
 		"lat": 30.3074624,
 		"lng": -98.0336008,
 		"tz": "America/Chicago" 
@@ -64,7 +64,7 @@ function populateDropdown() {
 		"lng": -99.423817,
 		"tz": "America/Mexico_City" 
 		},{
-		"name": "New York",
+		"name": "New York, NY",
 		"lat": 40.705311,
 		"lng": -74.2581965,
 		"tz": "America/New_York" 
@@ -74,10 +74,20 @@ function populateDropdown() {
 		"lng": 2.2775168,
 		"tz": "Europe/Paris" 
 		},{
+		"name": "Pittsburgh, PA",
+		"lat": 40.439722,
+		"lng": -79.976389,
+		"tz": "America/New_York" 
+		},{
 		"name": "Reykjavik",
 		"lat": 64.1322134,
 		"lng": -21.9925239,
 		"tz": "Atlantic/Reykjavik" 
+		},{
+		"name": "Shoreline, WA",
+		"lat": 47.756389,
+		"lng": -122.339722,
+		"tz": "America/Los_Angeles" 
 		},{
 		"name": "Tehran",
 		"lat": 35.6964894,
