@@ -5,8 +5,8 @@ require "sun.php";
 $locationData = array();
 
 
-$currentYear = filter_input(INPUT_POST, "year", FILTER_SANITIZE_MAGIC_QUOTES);
-$tz = filter_input(INPUT_POST, "tz", FILTER_SANITIZE_MAGIC_QUOTES);
+$currentYear = filter_input(INPUT_POST, "year", FILTER_SANITIZE_ADD_SLASHES);
+$tz = filter_input(INPUT_POST, "tz", FILTER_SANITIZE_ADD_SLASHES);
 $latitude = filter_input(INPUT_POST, "lat", FILTER_SANITIZE_ENCODED);
 $longitude = filter_input(INPUT_POST, "lng", FILTER_SANITIZE_ENCODED);
 
@@ -28,14 +28,14 @@ $i = 0;
 
 while ($currentDay != $endDate) {
      $i++;
-     
+
      $jd = julianDay($i, 1, $currentYear);
 
-     // Have to get the timezone each "day" to properly account for 
+     // Have to get the timezone each "day" to properly account for
      // daylight savings time
      $temp_tz = new DateTime($currentDay, new DateTimeZone($tz));
      $offset = $temp_tz->getOffset();
-     
+
      $rise = sunriseUTC($jd, $latitude, $longitude);
      if ($rise == -1) {
           // sun never rises
@@ -48,18 +48,18 @@ while ($currentDay != $endDate) {
                $set += $offset / 60;
           }
      }
-     
+
      if (abs($set - $rise) > 1440) {
           // sun never sets
           $rise = 0;
           $set = 1400;
      }
-     
+
      $rise = min($rise, 1440);
      $rise = max(0, $rise);
      $set = min($set, 1440);
      $set = max(0, $set);
-          
+
      // Month as a number from 0 to 11
      $monthNum = date("n", strtotime($currentDay)) - 1;
 
@@ -76,7 +76,7 @@ while ($currentDay != $endDate) {
                     $dayNum,
                     $dayOfWeek
                   );
-     
+
      $currentDay = date("Y-m-d", strtotime("+1 day", strtotime($currentDay)));
 }
 
