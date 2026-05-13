@@ -3,13 +3,16 @@
 }
 
 :root {
-  --bg: #233136;
-  --band: #7bbbd4;
-  --warm: #faf8ed;
-  --accent: #e24b09;
-  --text: #40483d;
-  --muted: #918f81;
-  --green: #79d177;
+    --font-body: 'Space Grotesk', sans-serif;
+    --font-title: 'Instrument Serif', serif;
+
+    --bg: #233136;
+    --band: #7bbbd4;
+    --warm: #faf8ed;
+    --accent: #e24b09;
+    --text: #40483d;
+    --muted: #918f81;
+    --green: #79d177;
 }
 
 body {
@@ -42,6 +45,21 @@ body {
 .picker-box h1 {
   margin: 0 0 1.5rem;
   font-size: 1.6rem;
+  font-family: var(--font-body);
+  color: var(--bg);
+  text-align: center;
+
+  background-image: linear-gradient(to bottom, oklch(0.1 0.2 100), oklch(0.75 0.2 250));
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.picker-box h2 {
+  margin: 0 0 1.5rem;
+  font-size: 1.6rem;
+  font-family: var(--font-title);
+  font-style: italic;
   color: var(--bg);
   text-align: center;
 }

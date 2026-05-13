@@ -18,7 +18,8 @@ export default function LocationPicker({ onSelect, currentYear }: Props) {
   return (
     <div className="picker-overlay">
       <div className="picker-box">
-        <h1>Sunrise &amp; Sunset</h1>
+        <h1>Daylight</h1>
+        <h2>Simple sunrise/sunset visualizer</h2>
         <form onSubmit={handleSubmit}>
           <div className="picker-row">
             <label htmlFor="location-select">Location</label>

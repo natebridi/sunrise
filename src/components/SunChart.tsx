@@ -362,10 +362,10 @@ function drawScrubber(
 }
 
 function drawScrubHandle(ctx: CanvasRenderingContext2D, x: number, cy: number) {
-  const PW = 36; // pill half-width
+  const PW = 24; // pill half-width
   const PH = 14; // pill half-height
-  const AR = 6;  // arrow reach from centre
-  const AH = 5;  // arrow head half-height
+  const AR = 16;  // arrow reach from centre
+  const AH = 7;  // arrow head half-height
 
   // Pill background
   ctx.beginPath();
@@ -374,13 +374,13 @@ function drawScrubHandle(ctx: CanvasRenderingContext2D, x: number, cy: number) {
   ctx.fill();
   ctx.strokeStyle = "rgba(255,255,255,0.55)";
   ctx.lineWidth = 1;
-  ctx.stroke();
+  //ctx.stroke();
 
   // Left arrow  ◁
   ctx.beginPath();
   ctx.moveTo(x - AR,      cy);         // tip
-  ctx.lineTo(x - AR + AH, cy - AH);   // top
-  ctx.lineTo(x - AR + AH, cy + AH);   // bottom
+  ctx.lineTo(x - AR + AH, cy - AH / 1.5);   // top
+  ctx.lineTo(x - AR + AH, cy + AH / 1.5);   // bottom
   ctx.closePath();
   ctx.fillStyle = "rgba(255,255,255,0.80)";
   ctx.fill();
@@ -388,8 +388,8 @@ function drawScrubHandle(ctx: CanvasRenderingContext2D, x: number, cy: number) {
   // Right arrow  ▷
   ctx.beginPath();
   ctx.moveTo(x + AR,      cy);         // tip
-  ctx.lineTo(x + AR - AH, cy - AH);   // top
-  ctx.lineTo(x + AR - AH, cy + AH);   // bottom
+  ctx.lineTo(x + AR - AH, cy - AH / 1.5);   // top
+  ctx.lineTo(x + AR - AH, cy + AH / 1.5);   // bottom
   ctx.closePath();
   ctx.fill();
 }
@@ -404,36 +404,36 @@ function drawTimeLabel(
   cssH: number,
   isSet: boolean,
 ) {
-  const PAD = 5;
-  const LINE_H = 14;
+  const PAD = 6;
+  const LINE_H = 16;
 
-  ctx.font = "bold 12px Arial";
+  ctx.font = "normal 14px 'Space Grotesk'";
   const timeW = ctx.measureText(time).width;
-  ctx.font = "9px Arial";
+  ctx.font = "11px 'Space Grotesk'";
   const kindW = ctx.measureText(kind.toUpperCase()).width;
-  const boxW = Math.max(timeW, kindW) + PAD * 2;
+  const boxW = Math.max(timeW, kindW) + PAD * 4;
   const boxH = LINE_H * 2 + PAD * 2;
 
   const toRight = x + 8 + boxW < cssW;
   const boxX = toRight ? x + 8 : x - 8 - boxW;
   const boxY = Math.max(4, Math.min(cssH - boxH - 4, y - boxH / 2));
 
-  ctx.fillStyle = isSet ? "rgba(15,40,60,0.90)" : "rgba(10,50,20,0.90)";
-  roundRect(ctx, boxX, boxY, boxW, boxH, 4);
+  ctx.fillStyle = "oklch(0.15 0.15 250 / 0.85)";
+  roundRect(ctx, boxX, boxY, boxW, boxH, 8);
   ctx.fill();
 
   ctx.beginPath();
   ctx.arc(x, y, 4, 0, Math.PI * 2);
-  ctx.fillStyle = isSet ? "#f0a050" : "#90d870";
+  ctx.fillStyle = isSet ? "#fff" : "#333";
   ctx.fill();
 
-  ctx.font = "9px Arial";
-  ctx.fillStyle = isSet ? "rgba(255,180,100,0.85)" : "rgba(160,230,120,0.85)";
-  ctx.fillText(kind.toUpperCase(), boxX + PAD, boxY + PAD + 9);
+  ctx.font = "11px 'Space Grotesk'";
+  ctx.fillStyle = '#fff';
+  ctx.fillText(kind, boxX + PAD * 2, boxY + PAD + 11);
 
-  ctx.font = "bold 12px Arial";
+  ctx.font = "normal 14px 'Space Grotesk'";
   ctx.fillStyle = "#ffffff";
-  ctx.fillText(time, boxX + PAD, boxY + PAD + 9 + LINE_H);
+  ctx.fillText(time, boxX + PAD * 2, boxY + PAD + 11 + LINE_H);
 }
 
 function roundRect(
