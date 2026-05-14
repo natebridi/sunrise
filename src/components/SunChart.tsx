@@ -24,6 +24,8 @@ interface Props {
   onToggleGrid: () => void;
 }
 
+const TYPEFACE = "'Space Grotesk'";
+
 export default function SunChart({ days, scrubIndex, onScrub, showGrid, twelveHour, onToggleClock, onToggleGrid }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const noiseRef = useRef<HTMLCanvasElement | null>(null);
@@ -264,20 +266,20 @@ export default function SunChart({ days, scrubIndex, onScrub, showGrid, twelveHo
 
   return (
     <div className="chart-wrapper">
-      <div className="canvas-container">
-        <canvas ref={canvasRef} className="sun-canvas" />
-        {days.length > 0 && (
-          <input
-            type="range"
-            className="scrubber"
-            min={0}
-            max={100}
-            step={0.01}
-            value={scrubberPercent}
-            onChange={handleRangeChange}
-          />
-        )}
-      </div>
+
+      <canvas ref={canvasRef} className="sun-canvas" />
+      {days.length > 0 && (
+        <input
+          type="range"
+          className="scrubber"
+          min={0}
+          max={100}
+          step={0.01}
+          value={scrubberPercent}
+          onChange={handleRangeChange}
+        />
+      )}
+
       <div className="zoom-controls">
         <button
           className={focusedMonth === null ? "zoom-btn active" : "zoom-btn"}
@@ -397,9 +399,9 @@ function drawTimeLabel(
   const PAD = 6;
   const LINE_H = 16;
 
-  ctx.font = "normal 14px 'Space Grotesk'";
+  ctx.font = `normal 14px ${TYPEFACE}`;
   const timeW = ctx.measureText(time).width;
-  ctx.font = "11px 'Space Grotesk'";
+  ctx.font = `11px ${TYPEFACE}`;
   const kindW = ctx.measureText(kind.toUpperCase()).width;
   const boxW = Math.max(timeW, kindW) + PAD * 4;
   const boxH = LINE_H * 2 + PAD * 2;
@@ -417,11 +419,11 @@ function drawTimeLabel(
   ctx.fillStyle = isSet ? "#fff" : "#333";
   ctx.fill();
 
-  ctx.font = "11px 'Space Grotesk'";
+  ctx.font = `11px ${TYPEFACE}`;
   ctx.fillStyle = '#fff';
   ctx.fillText(kind, boxX + PAD * 2, boxY + PAD + 11);
 
-  ctx.font = "normal 14px 'Space Grotesk'";
+  ctx.font = `normal 14px ${TYPEFACE}`;
   ctx.fillStyle = "#ffffff";
   ctx.fillText(time, boxX + PAD * 2, boxY + PAD + 11 + LINE_H);
 }
@@ -481,7 +483,7 @@ function drawGrid(
       ctx.stroke();
 
       ctx.fillStyle = "rgba(255,255,255,0.3)";
-      ctx.font = "11px Arial";
+      ctx.font = "11px ";
       const label = String(days[i - 1].day);
       const lw = ctx.measureText(label).width;
       ctx.fillText(label, i * xscale + xOffset - xscale / 2 - lw / 2, topPad + 20);
@@ -496,7 +498,7 @@ function drawGrid(
 
       const colW = daysInMonth * xscale;
       ctx.fillStyle = "rgba(255,255,255,0.55)";
-      ctx.font = "bold 11px Arial";
+      ctx.font = `bold 11px ${TYPEFACE}`;
       const full  = MONTH_NAMES[days[i - 1].month];
       const short = MONTH_NAMES_SHORT[days[i - 1].month];
       const label = ctx.measureText(full).width + 8 <= colW ? full : short;
@@ -508,7 +510,7 @@ function drawGrid(
     if (i === totalDays - 1) {
       const decColW = (daysInMonth + 1) * xscale;
       ctx.fillStyle = "rgba(255,255,255,0.55)";
-      ctx.font = "bold 11px Arial";
+      ctx.font = `bold 11px ${TYPEFACE}`;
       const label = ctx.measureText("December").width + 8 <= decColW ? "December" : "Dec";
       const lw = ctx.measureText(label).width;
       ctx.fillText(label, (i + 1) * xscale + xOffset - decColW / 2 - lw / 2, topPad + 20);

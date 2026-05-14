@@ -73,8 +73,22 @@ export default function App() {
       />
 
       <div className="floating-ui">
-        {/* Day stats — most prominent */}
-        <div className="glass-card day-stats">
+        <div className="card location">
+          <select
+            className="location-select"
+            value={location?.name ?? ""}
+            onChange={handleLocationChange}
+          >
+            <option value="" disabled>Select a city…</option>
+            {LOCATIONS.map((l) => (
+              <option key={l.name} value={l.name}>{l.name}</option>
+            ))}
+          </select>
+        </div>
+
+        {/* Day stats */}
+        <div className="card day-stats">
+
           {current ? (
             <>
               <div className="stats-date">
@@ -101,17 +115,8 @@ export default function App() {
         </div>
 
         {/* Year + location */}
-        <div className="glass-card year-section">
-          <select
-            className="location-select"
-            value={location?.name ?? ""}
-            onChange={handleLocationChange}
-          >
-            <option value="" disabled>Select a city…</option>
-            {LOCATIONS.map((l) => (
-              <option key={l.name} value={l.name}>{l.name}</option>
-            ))}
-          </select>
+        <div className="card year-section">
+
 
           <div className="year-row">
             <button className="year-btn" onClick={() => setYear((y) => y - 1)}>◁</button>
