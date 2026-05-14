@@ -11,17 +11,21 @@ const MONTH_NAMES_SHORT = [
   "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
 ];
 
+// Vertical pixels reserved at the top for the floating UI overlay
+const TOP_PAD = 160;
+
 interface Props {
   days: DayData[];
   scrubIndex: number;
   onScrub: (index: number) => void;
   showGrid: boolean;
   twelveHour: boolean;
+  onToggleClock: () => void;
+  onToggleGrid: () => void;
 }
 
-export default function SunChart({ days, scrubIndex, onScrub, showGrid, twelveHour }: Props) {
+export default function SunChart({ days, scrubIndex, onScrub, showGrid, twelveHour, onToggleClock, onToggleGrid }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  // Noise canvas is cached and regenerated only when the main canvas resizes
   const noiseRef = useRef<HTMLCanvasElement | null>(null);
   const starRef = useRef<HTMLCanvasElement | null>(null);
   const [focusedMonth, setFocusedMonth] = useState<number | null>(null);
@@ -39,7 +43,6 @@ export default function SunChart({ days, scrubIndex, onScrub, showGrid, twelveHo
     return { xscale, xOffset };
   }
 
-  // Returns a cached noise canvas, regenerated on size change
   function getNoise(cssW: number, cssH: number): HTMLCanvasElement {
     const w = Math.ceil(cssW);
     const h = Math.ceil(cssH);
@@ -72,31 +75,25 @@ export default function SunChart({ days, scrubIndex, onScrub, showGrid, twelveHo
     sc.height = h;
     const sctx = sc.getContext('2d')!;
 
-    const canvasArea = w * h;
-    const starsFraction = canvasArea / 500;
-
+    const starsFraction = (w * h) / 500;
     for (let i = 0; i < starsFraction; i++) {
-      let xPos = random(2, w - 2);
-      let yPos = randomBiased(-30, h + 30, 4);
-      let alpha = random(0.15, 0.5);
-      let size = random(1, 2);
-
-      sctx.fillStyle = `oklch(0.90 0.10 ${random(100,255)})`;
+      const xPos = random(2, w - 2);
+      const yPos = randomBiased(-30, h + 30, 4);
+      const alpha = random(0.15, 0.5);
+      const size = random(1, 2);
+      sctx.fillStyle = `oklch(0.90 0.10 ${random(100, 255)})`;
       sctx.globalAlpha = alpha;
       sctx.fillRect(xPos, yPos, size, size);
     }
 
     starRef.current = sc;
     return sc;
-
   }
 
   function random(min: number, max: number) {
     return min + Math.random() * (max - min);
   }
 
-  // Returns a value in [min, max] biased toward the ends of the range.
-  // strength=2 gives a moderate U-shape; higher values pull harder to the extremes.
   function randomBiased(min: number, max: number, strength = 2) {
     const t = Math.random();
     const u = t < 0.5
@@ -107,7 +104,7 @@ export default function SunChart({ days, scrubIndex, onScrub, showGrid, twelveHo
 
   const draw = useCallback(() => {
     const canvas = canvasRef.current;
-    if (!canvas || days.length === 0) return;
+    if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
@@ -118,72 +115,80 @@ export default function SunChart({ days, scrubIndex, onScrub, showGrid, twelveHo
     if (canvas.width !== cssW * dpr || canvas.height !== cssH * dpr) {
       canvas.width = cssW * dpr;
       canvas.height = cssH * dpr;
-      noiseRef.current = null; // force noise regen on resize
-      starRef.current = null; // force star regen on resize
+      noiseRef.current = null;
+      starRef.current = null;
     }
 
     ctx.save();
     ctx.scale(dpr, dpr);
     ctx.clearRect(0, 0, cssW, cssH);
 
-    const totalDays = days.length;
-    const yscale = cssH / 1440;
-    const { xscale, xOffset } = getScaleOffset(cssW);
+    const yscale = (cssH - TOP_PAD) / 1440;
 
-    // Average rise/set as 0–1 fraction of the day, used to position gradient stops
-    const avgRise = c01(days.reduce((s, d) => s + d.rise, 0) / days.length / 1440);
-    const avgSet  = c01(days.reduce((s, d) => s + d.set,  0) / days.length / 1440);
+    // Convert a data fraction [0–1] of the day into a canvas Y fraction [0–1]
+    const topFrac = cssH > 0 ? TOP_PAD / cssH : 0;
+    const bandFrac = 1 - topFrac;
+    const toCanvasFrac = (f: number) => c01(topFrac + f * bandFrac);
+
+    const avgRise = days.length > 0
+      ? c01(days.reduce((s, d) => s + d.rise, 0) / days.length / 1440)
+      : 0.25;
+    const avgSet = days.length > 0
+      ? c01(days.reduce((s, d) => s + d.set, 0) / days.length / 1440)
+      : 0.75;
 
     // ── Night sky background ──────────────────────────────────────────────────
     const bg = ctx.createLinearGradient(0, 0, 0, cssH);
-    bg.addColorStop(0,                         "oklch(0.02 0.2 200)");
-    bg.addColorStop(c01(avgRise - 0.10),       "oklch(0.15 0.08 240)");
-    bg.addColorStop(c01(avgSet  + 0.02),       "oklch(0.06 0.2 320)");
-    bg.addColorStop(1,                         "oklch(0.01 0.2 200)");
+    bg.addColorStop(0,                                    "oklch(0.02 0.2 200)");
+    bg.addColorStop(toCanvasFrac(c01(avgRise - 0.10)),   "oklch(0.15 0.08 240)");
+    bg.addColorStop(toCanvasFrac(c01(avgSet  + 0.02)),   "oklch(0.06 0.2 320)");
+    bg.addColorStop(1,                                    "oklch(0.01 0.2 200)");
     ctx.fillStyle = bg;
     ctx.fillRect(0, 0, cssW, cssH);
 
     ctx.drawImage(getStars(cssW, cssH), 0, 0);
 
-    // ── Day band: per-column gradient anchored to each day's rise/set Y ─────────
-    // Each column gets its own linearGradient from riseY→setY so the color stops
-    // (dawn orange, morning gold, noon blue, dusk red) follow the curve exactly.
+    if (days.length === 0) {
+      ctx.globalAlpha = 0.05;
+      ctx.drawImage(getNoise(cssW, cssH), 0, 0);
+      ctx.globalAlpha = 1;
+      ctx.restore();
+      return;
+    }
+
+    const totalDays = days.length;
+    const { xscale, xOffset } = getScaleOffset(cssW);
+
+    // ── Day band: per-column gradient anchored to each day's rise/set Y ──────
     for (let i = 0; i < totalDays; i++) {
       const x = i * xscale + xOffset;
       if (x + xscale < 0 || x > cssW) continue;
-      const riseY = days[i].rise * yscale;
-      const setY  = days[i].set  * yscale;
-      if (setY <= riseY) continue; // polar night / degenerate
+      const riseY = TOP_PAD + days[i].rise * yscale;
+      const setY  = TOP_PAD + days[i].set  * yscale;
+      if (setY <= riseY) continue;
 
       const g = ctx.createLinearGradient(0, riseY, 0, setY);
-      g.addColorStop(0.00, "oklch(0.7022 0.1635 43.9)"); // dawn
-      g.addColorStop(0.08, "oklch(0.843 0.1307 79.12)"); // morning
-      g.addColorStop(0.35, "oklch(0.7081 0.1241 231.16)"); // noon sky
-      g.addColorStop(0.65, "oklch(0.7081 0.1241 231.16)"); // noon sky
+      g.addColorStop(0.00, "oklch(0.7022 0.1635 43.9)");
+      g.addColorStop(0.08, "oklch(0.843 0.1307 79.12)");
+      g.addColorStop(0.35, "oklch(0.7081 0.1241 231.16)");
+      g.addColorStop(0.65, "oklch(0.7081 0.1241 231.16)");
       g.addColorStop(0.82, "oklch(0.8112 0.0282 177.55)");
       g.addColorStop(0.90, "oklch(0.7243 0.0301 46.81)");
-      g.addColorStop(1.00, "oklch(0.4604 0.0561 268.74)"); // dusk
+      g.addColorStop(1.00, "oklch(0.4604 0.0561 268.74)");
       ctx.fillStyle = g;
       ctx.fillRect(x, riseY, xscale + 1, setY - riseY);
     }
 
     ctx.lineWidth = 1;
 
-    // ── Per-column dawn / dusk glow (width varies with rate of change) ────────
-    // Near solstices the sun "lingers" → slow rate → wider glow.
-    // Near equinoxes the sun moves quickly → narrow glow.
-    const speeds = computeSpeeds(days);
-
+    // ── Per-column dawn / dusk glow ───────────────────────────────────────────
     for (let i = 0; i < totalDays; i++) {
       const x = i * xscale + xOffset;
       if (x + xscale < 0 || x > cssW) continue;
 
-      const riseY = days[i].rise * yscale;
-      const setY  = days[i].set  * yscale;
-
+      const riseY = TOP_PAD + days[i].rise * yscale;
+      const setY  = TOP_PAD + days[i].set  * yscale;
       const glow = 60;
-
-      // Dawn glow (straddles the sunrise hardline, stronger inside the band)
 
       const dg = ctx.createLinearGradient(0, riseY - glow, 0, riseY + glow);
       dg.addColorStop(0,    "oklch(0.05 0.2 250 / 0)");
@@ -193,7 +198,6 @@ export default function SunChart({ days, scrubIndex, onScrub, showGrid, twelveHo
       ctx.fillStyle = dg;
       ctx.fillRect(x, riseY - glow, xscale, glow * 2);
 
-      // Dusk glow (stronger just above the sunset line, fades into evening)
       const sg2 = ctx.createLinearGradient(0, setY - glow, 0, setY + glow);
       sg2.addColorStop(0,    "rgba(230,80,360,0)");
       sg2.addColorStop(0.35, "rgba(230,80,330,0.2)");
@@ -202,30 +206,27 @@ export default function SunChart({ days, scrubIndex, onScrub, showGrid, twelveHo
       ctx.fillStyle = sg2;
       ctx.fillRect(x, setY - glow, xscale, glow * 2);
 
-      // dots that follow the lines
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.5)'//'oklch(0.2 0.3 200 / 1)'
-      ctx.beginPath()
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+      ctx.beginPath();
       ctx.arc(x, riseY, 1, 0, 2 * Math.PI);
       ctx.fill();
 
-      ctx.beginPath()
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.5)'//'oklch(0.2 0.3 200 / 1)'
+      ctx.beginPath();
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
       ctx.arc(x, setY, 1, 0, 2 * Math.PI);
       ctx.fill();
     }
 
     // ── Grid ──────────────────────────────────────────────────────────────────
-    if (showGrid) drawGrid(ctx, days, cssW, cssH, xscale, xOffset, focusedMonth !== null);
+    if (showGrid) drawGrid(ctx, days, cssW, cssH, xscale, xOffset, focusedMonth !== null, TOP_PAD, yscale);
 
     // ── Scrubber ──────────────────────────────────────────────────────────────
-    drawScrubber(ctx, days, scrubIndex, cssW, cssH, xscale, xOffset, yscale, twelveHour);
+    drawScrubber(ctx, days, scrubIndex, cssW, cssH, xscale, xOffset, yscale, twelveHour, TOP_PAD);
 
     // ── Noise texture ─────────────────────────────────────────────────────────
     ctx.globalAlpha = 0.05;
     ctx.drawImage(getNoise(cssW, cssH), 0, 0);
     ctx.globalAlpha = 1;
-
-
 
     ctx.restore();
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -263,6 +264,20 @@ export default function SunChart({ days, scrubIndex, onScrub, showGrid, twelveHo
 
   return (
     <div className="chart-wrapper">
+      <div className="canvas-container">
+        <canvas ref={canvasRef} className="sun-canvas" />
+        {days.length > 0 && (
+          <input
+            type="range"
+            className="scrubber"
+            min={0}
+            max={100}
+            step={0.01}
+            value={scrubberPercent}
+            onChange={handleRangeChange}
+          />
+        )}
+      </div>
       <div className="zoom-controls">
         <button
           className={focusedMonth === null ? "zoom-btn active" : "zoom-btn"}
@@ -283,19 +298,13 @@ export default function SunChart({ days, scrubIndex, onScrub, showGrid, twelveHo
             {name.slice(0, 3)}
           </button>
         ))}
-      </div>
-
-      <div className="canvas-container">
-        <canvas ref={canvasRef} className="sun-canvas" />
-        <input
-          type="range"
-          className="scrubber"
-          min={0}
-          max={100}
-          step={0.01}
-          value={scrubberPercent}
-          onChange={handleRangeChange}
-        />
+        <div className="zoom-sep" />
+        <button className="zoom-btn" onClick={onToggleClock}>
+          {twelveHour ? "24hr" : "12hr"}
+        </button>
+        <button className="zoom-btn" onClick={onToggleGrid}>
+          {showGrid ? "No grid" : "Grid"}
+        </button>
       </div>
     </div>
   );
@@ -303,26 +312,10 @@ export default function SunChart({ days, scrubIndex, onScrub, showGrid, twelveHo
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-/** Clamp to [0, 1] */
 function c01(v: number) { return Math.max(0, Math.min(1, v)); }
 
-/** Rate of change of rise/set times (minutes/day) via central difference */
-function computeSpeeds(days: DayData[]) {
-  return days.map((_, i) => {
-    const p = days[Math.max(0, i - 1)];
-    const n = days[Math.min(days.length - 1, i + 1)];
-    return {
-      rise: Math.abs(n.rise - p.rise) / 2,
-      set:  Math.abs(n.set  - p.set)  / 2,
-    };
-  });
-}
-
-/**
- * Glow half-width in CSS pixels.
- * Speed near 0 (solstice, sun lingers) → wide glow.
- * Speed ~2-3 min/day (equinox, fast transition) → narrow glow.
- */
+// Kept for speed-based glow when re-enabled
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function glowPx(speed: number): number {
   return Math.max(8, Math.min(50, 16 / (speed * 0.25 + 0.18)));
 }
@@ -337,6 +330,7 @@ function drawScrubber(
   xOffset: number,
   yscale: number,
   twelveHour: boolean,
+  topPad: number,
 ) {
   const day = days[scrubIndex];
   if (!day) return;
@@ -344,7 +338,7 @@ function drawScrubber(
   const x = Math.round(scrubIndex * xscale + xOffset) + 0.5;
 
   ctx.beginPath();
-  ctx.moveTo(x, 0);
+  ctx.moveTo(x, topPad);
   ctx.lineTo(x, cssH);
   ctx.strokeStyle = "rgba(255,255,255,0.85)";
   ctx.lineWidth = 1.5;
@@ -354,42 +348,38 @@ function drawScrubber(
   const riseLabel = twelveHour ? day.risef  : day.risef24;
   const setLabel  = twelveHour ? day.setf   : day.setf24;
 
-  drawTimeLabel(ctx, "Rise", riseLabel, x, day.rise * yscale, cssW, cssH, false);
-  drawTimeLabel(ctx, "Set",  setLabel,  x, day.set  * yscale, cssW, cssH, true);
+  drawTimeLabel(ctx, "Rise", riseLabel, x, topPad + day.rise * yscale, cssW, cssH, false);
+  drawTimeLabel(ctx, "Set",  setLabel,  x, topPad + day.set  * yscale, cssW, cssH, true);
 
-  const midY = (day.rise + day.set) / 2 * yscale;
+  const midY = topPad + (day.rise + day.set) / 2 * yscale;
   drawScrubHandle(ctx, x, midY);
 }
 
 function drawScrubHandle(ctx: CanvasRenderingContext2D, x: number, cy: number) {
-  const PW = 24; // pill half-width
-  const PH = 14; // pill half-height
-  const AR = 16;  // arrow reach from centre
-  const AH = 7;  // arrow head half-height
+  const PW = 24;
+  const PH = 14;
+  const AR = 16;
+  const AH = 7;
 
-  // Pill background
   ctx.beginPath();
   roundRect(ctx, x - PW, cy - PH, PW * 2, PH * 2, PH);
   ctx.fillStyle = "rgba(255,255,255,0.18)";
   ctx.fill();
   ctx.strokeStyle = "rgba(255,255,255,0.55)";
   ctx.lineWidth = 1;
-  //ctx.stroke();
 
-  // Left arrow  ◁
   ctx.beginPath();
-  ctx.moveTo(x - AR,      cy);         // tip
-  ctx.lineTo(x - AR + AH, cy - AH / 1.5);   // top
-  ctx.lineTo(x - AR + AH, cy + AH / 1.5);   // bottom
+  ctx.moveTo(x - AR,      cy);
+  ctx.lineTo(x - AR + AH, cy - AH / 1.5);
+  ctx.lineTo(x - AR + AH, cy + AH / 1.5);
   ctx.closePath();
   ctx.fillStyle = "rgba(255,255,255,0.80)";
   ctx.fill();
 
-  // Right arrow  ▷
   ctx.beginPath();
-  ctx.moveTo(x + AR,      cy);         // tip
-  ctx.lineTo(x + AR - AH, cy - AH / 1.5);   // top
-  ctx.lineTo(x + AR - AH, cy + AH / 1.5);   // bottom
+  ctx.moveTo(x + AR,      cy);
+  ctx.lineTo(x + AR - AH, cy - AH / 1.5);
+  ctx.lineTo(x + AR - AH, cy + AH / 1.5);
   ctx.closePath();
   ctx.fill();
 }
@@ -461,14 +451,16 @@ function drawGrid(
   xscale: number,
   xOffset: number,
   zoomed: boolean,
+  topPad: number,
+  yscale: number,
 ) {
   const totalDays = days.length;
 
-  // Horizontal hour lines every 3 hours
+  // Horizontal hour lines — only within the chart band
   ctx.beginPath();
   for (let i = 1; i < 24; i++) {
     if (i % 3 === 0) {
-      const y = Math.floor((i * cssH) / 24) + 0.5;
+      const y = Math.floor(topPad + i * 60 * yscale) + 0.5;
       ctx.moveTo(0, y);
       ctx.lineTo(cssW, y);
     }
@@ -476,7 +468,6 @@ function drawGrid(
   ctx.strokeStyle = "rgba(255,255,255,0.08)";
   ctx.stroke();
 
-  // Vertical month dividers + labels
   let daysInMonth = 0;
   for (let i = 1; i < totalDays; i++) {
     daysInMonth++;
@@ -484,7 +475,7 @@ function drawGrid(
 
     if (zoomed) {
       ctx.beginPath();
-      ctx.moveTo(x, 0);
+      ctx.moveTo(x, topPad);
       ctx.lineTo(x, cssH);
       ctx.strokeStyle = "rgba(255,255,255,0.07)";
       ctx.stroke();
@@ -493,12 +484,12 @@ function drawGrid(
       ctx.font = "11px Arial";
       const label = String(days[i - 1].day);
       const lw = ctx.measureText(label).width;
-      ctx.fillText(label, i * xscale + xOffset - xscale / 2 - lw / 2, 40);
+      ctx.fillText(label, i * xscale + xOffset - xscale / 2 - lw / 2, topPad + 20);
     }
 
     if (days[i].month !== days[i - 1].month) {
       ctx.beginPath();
-      ctx.moveTo(x, 0);
+      ctx.moveTo(x, topPad);
       ctx.lineTo(x, cssH);
       ctx.strokeStyle = "rgba(255,255,255,0.22)";
       ctx.stroke();
@@ -510,7 +501,7 @@ function drawGrid(
       const short = MONTH_NAMES_SHORT[days[i - 1].month];
       const label = ctx.measureText(full).width + 8 <= colW ? full : short;
       const lw = ctx.measureText(label).width;
-      ctx.fillText(label, i * xscale + xOffset - colW / 2 - lw / 2, 20);
+      ctx.fillText(label, i * xscale + xOffset - colW / 2 - lw / 2, topPad + 20);
       daysInMonth = 0;
     }
 
@@ -520,7 +511,7 @@ function drawGrid(
       ctx.font = "bold 11px Arial";
       const label = ctx.measureText("December").width + 8 <= decColW ? "December" : "Dec";
       const lw = ctx.measureText(label).width;
-      ctx.fillText(label, (i + 1) * xscale + xOffset - decColW / 2 - lw / 2, 20);
+      ctx.fillText(label, (i + 1) * xscale + xOffset - decColW / 2 - lw / 2, topPad + 20);
     }
   }
 }
