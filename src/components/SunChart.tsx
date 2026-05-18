@@ -14,6 +14,15 @@ const MONTH_NAMES_SHORT = [
 // Vertical pixels reserved at the top for the floating UI overlay
 const TOP_PAD = 210;
 
+type GradCache = {
+  days: DayData[];
+  cssH: number;
+  bg: CanvasGradient;
+  band: CanvasGradient[];
+  dawn: CanvasGradient[];
+  dusk: CanvasGradient[];
+};
+
 interface Props {
   days: DayData[];
   scrubIndex: number;
@@ -30,6 +39,7 @@ export default function SunChart({ days, scrubIndex, onScrub, showGrid, twelveHo
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const noiseRef = useRef<HTMLCanvasElement | null>(null);
   const starRef = useRef<HTMLCanvasElement | null>(null);
+  const gradCacheRef = useRef<GradCache | null>(null);
   const [focusedMonth, setFocusedMonth] = useState<number | null>(null);
 
   function getScaleOffset(cssW: number) {
@@ -119,6 +129,7 @@ export default function SunChart({ days, scrubIndex, onScrub, showGrid, twelveHo
       canvas.height = cssH * dpr;
       noiseRef.current = null;
       starRef.current = null;
+      gradCacheRef.current = null;
     }
 
     ctx.save();
@@ -127,25 +138,65 @@ export default function SunChart({ days, scrubIndex, onScrub, showGrid, twelveHo
 
     const yscale = (cssH - TOP_PAD) / 1440;
 
-    // Convert a data fraction [0–1] of the day into a canvas Y fraction [0–1]
-    const topFrac = cssH > 0 ? TOP_PAD / cssH : 0;
-    const bandFrac = 1 - topFrac;
-    const toCanvasFrac = (f: number) => c01(topFrac + f * bandFrac);
+    // ── Gradient cache — rebuild only when days or canvas height changes ──────
+    const prevGrads = gradCacheRef.current;
+    if (!prevGrads || prevGrads.days !== days || prevGrads.cssH !== cssH) {
+      const topFrac = cssH > 0 ? TOP_PAD / cssH : 0;
+      const toCanvasFrac = (f: number) => c01(topFrac + (1 - topFrac) * f);
 
-    const avgRise = days.length > 0
-      ? c01(days.reduce((s, d) => s + d.rise, 0) / days.length / 1440)
-      : 0.25;
-    const avgSet = days.length > 0
-      ? c01(days.reduce((s, d) => s + d.set, 0) / days.length / 1440)
-      : 0.75;
+      const avgRise = days.length > 0
+        ? c01(days.reduce((s, d) => s + d.rise, 0) / days.length / 1440)
+        : 0.25;
+      const avgSet = days.length > 0
+        ? c01(days.reduce((s, d) => s + d.set, 0) / days.length / 1440)
+        : 0.75;
+
+      const bg = ctx.createLinearGradient(0, 0, 0, cssH);
+      bg.addColorStop(0,                                   "oklch(0.02 0.2 200)");
+      bg.addColorStop(toCanvasFrac(c01(avgRise - 0.10)),  "oklch(0.15 0.08 240)");
+      bg.addColorStop(toCanvasFrac(c01(avgSet  + 0.02)),  "oklch(0.06 0.2 320)");
+      bg.addColorStop(1,                                   "oklch(0.01 0.2 200)");
+
+      const band: CanvasGradient[] = [];
+      const dawn: CanvasGradient[] = [];
+      const dusk: CanvasGradient[] = [];
+      const glow = 60;
+
+      for (let i = 0; i < days.length; i++) {
+        const riseY = TOP_PAD + days[i].rise * yscale;
+        const setY  = TOP_PAD + days[i].set  * yscale;
+
+        const g = ctx.createLinearGradient(0, riseY, 0, setY);
+        g.addColorStop(0.00, "oklch(0.7022 0.1635 43.9)");
+        g.addColorStop(0.08, "oklch(0.843 0.1307 79.12)");
+        g.addColorStop(0.35, "oklch(0.7081 0.1241 231.16)");
+        g.addColorStop(0.65, "oklch(0.7081 0.1241 231.16)");
+        g.addColorStop(0.82, "oklch(0.8112 0.0282 177.55)");
+        g.addColorStop(0.90, "oklch(0.7243 0.0301 46.81)");
+        g.addColorStop(1.00, "oklch(0.4604 0.0561 268.74)");
+        band.push(g);
+
+        const dg = ctx.createLinearGradient(0, riseY - glow, 0, riseY + glow);
+        dg.addColorStop(0,    "oklch(0.05 0.2 250 / 0)");
+        dg.addColorStop(0.45, "oklch(0.85 0.2 50)");
+        dg.addColorStop(0.80, "oklch(0.90 0.10 90 / 0.2)");
+        dg.addColorStop(1,    "oklch(0.95 0.3 90 / 0)");
+        dawn.push(dg);
+
+        const sg2 = ctx.createLinearGradient(0, setY - glow, 0, setY + glow);
+        sg2.addColorStop(0,    "rgba(230,80,360,0)");
+        sg2.addColorStop(0.35, "rgba(230,80,330,0.2)");
+        sg2.addColorStop(0.65, "oklch(0.11 0.25 250 / .75)");
+        sg2.addColorStop(1,    "oklch(0.05 0.1 250 / 0)");
+        dusk.push(sg2);
+      }
+
+      gradCacheRef.current = { days, cssH, bg, band, dawn, dusk };
+    }
+    const grads = gradCacheRef.current!;
 
     // ── Night sky background ──────────────────────────────────────────────────
-    const bg = ctx.createLinearGradient(0, 0, 0, cssH);
-    bg.addColorStop(0,                                    "oklch(0.02 0.2 200)");
-    bg.addColorStop(toCanvasFrac(c01(avgRise - 0.10)),   "oklch(0.15 0.08 240)");
-    bg.addColorStop(toCanvasFrac(c01(avgSet  + 0.02)),   "oklch(0.06 0.2 320)");
-    bg.addColorStop(1,                                    "oklch(0.01 0.2 200)");
-    ctx.fillStyle = bg;
+    ctx.fillStyle = grads.bg;
     ctx.fillRect(0, 0, cssW, cssH);
 
     ctx.drawImage(getStars(cssW, cssH), 0, 0);
@@ -168,44 +219,25 @@ export default function SunChart({ days, scrubIndex, onScrub, showGrid, twelveHo
       const riseY = TOP_PAD + days[i].rise * yscale;
       const setY  = TOP_PAD + days[i].set  * yscale;
       if (setY <= riseY) continue;
-
-      const g = ctx.createLinearGradient(0, riseY, 0, setY);
-      g.addColorStop(0.00, "oklch(0.7022 0.1635 43.9)");
-      g.addColorStop(0.08, "oklch(0.843 0.1307 79.12)");
-      g.addColorStop(0.35, "oklch(0.7081 0.1241 231.16)");
-      g.addColorStop(0.65, "oklch(0.7081 0.1241 231.16)");
-      g.addColorStop(0.82, "oklch(0.8112 0.0282 177.55)");
-      g.addColorStop(0.90, "oklch(0.7243 0.0301 46.81)");
-      g.addColorStop(1.00, "oklch(0.4604 0.0561 268.74)");
-      ctx.fillStyle = g;
+      ctx.fillStyle = grads.band[i];
       ctx.fillRect(x, riseY, xscale + 1, setY - riseY);
     }
 
     ctx.lineWidth = 1;
 
     // ── Per-column dawn / dusk glow ───────────────────────────────────────────
+    const glow = 60;
     for (let i = 0; i < totalDays; i++) {
       const x = i * xscale + xOffset;
       if (x + xscale < 0 || x > cssW) continue;
 
       const riseY = TOP_PAD + days[i].rise * yscale;
       const setY  = TOP_PAD + days[i].set  * yscale;
-      const glow = 60;
 
-      const dg = ctx.createLinearGradient(0, riseY - glow, 0, riseY + glow);
-      dg.addColorStop(0,    "oklch(0.05 0.2 250 / 0)");
-      dg.addColorStop(0.45, "oklch(0.85 0.2 50)");
-      dg.addColorStop(0.80, "oklch(0.90 0.10 90 / 0.2)");
-      dg.addColorStop(1,    "oklch(0.95 0.3 90 / 0)");
-      ctx.fillStyle = dg;
+      ctx.fillStyle = grads.dawn[i];
       ctx.fillRect(x, riseY - glow, xscale, glow * 2);
 
-      const sg2 = ctx.createLinearGradient(0, setY - glow, 0, setY + glow);
-      sg2.addColorStop(0,    "rgba(230,80,360,0)");
-      sg2.addColorStop(0.35, "rgba(230,80,330,0.2)");
-      sg2.addColorStop(0.65, "oklch(0.11 0.25 250 / .75)");
-      sg2.addColorStop(1,    "oklch(0.05 0.1 250 / 0)");
-      ctx.fillStyle = sg2;
+      ctx.fillStyle = grads.dusk[i];
       ctx.fillRect(x, setY - glow, xscale, glow * 2);
 
       ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
