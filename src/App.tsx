@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import SunChart from "./components/SunChart";
+import LocationMap from "./components/LocationMap";
 import { useSunData } from "./lib/useSunData";
 import type { Location } from "./lib/locations";
 import LOCATIONS from "./lib/locations";
@@ -30,18 +31,20 @@ export default function App() {
   );
   const days = location !== null ? rawDays : [];
 
-  function handleLocationChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    const loc = LOCATIONS.find((l) => l.name === e.target.value) ?? null;
+  function selectLocation(loc: Location) {
     setLocation(loc);
-    if (loc) {
-      if (year === today.getFullYear()) {
-        const startOfYear = new Date(year, 0, 1);
-        const dayOfYear = Math.floor((today.getTime() - startOfYear.getTime()) / 86400000);
-        setScrubIndex(dayOfYear);
-      } else {
-        setScrubIndex(0);
-      }
+    if (year === today.getFullYear()) {
+      const startOfYear = new Date(year, 0, 1);
+      const dayOfYear = Math.floor((today.getTime() - startOfYear.getTime()) / 86400000);
+      setScrubIndex(dayOfYear);
+    } else {
+      setScrubIndex(0);
     }
+  }
+
+  function handleLocationChange(e: React.ChangeEvent<HTMLSelectElement>) {
+    const loc = LOCATIONS.find((l) => l.name === e.target.value);
+    if (loc) selectLocation(loc);
   }
 
   const yearStats = useMemo(() => {
@@ -84,6 +87,7 @@ export default function App() {
               <option key={l.name} value={l.name}>{l.name}</option>
             ))}
           </select>
+          <LocationMap selected={location} onSelect={selectLocation} />
         </div>
 
         {/* Day stats */}

@@ -231,6 +231,41 @@ body {
   border-color: rgba(255, 255, 255, 0.3);
 }
 
+/* ── Location minimap ─────────────────────────────────────────────────────── */
+.location-map {
+  display: block;
+  width: 100%;
+  aspect-ratio: 2 / 1;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.location-map circle {
+    stroke: none;
+    fill: oklch(0.35 0 200);
+}
+
+.map-dot {
+  cursor: pointer;
+}
+
+.map-dot-fill {
+  fill: rgba(255, 255, 255, 0.35);
+  transition: fill 0.15s, r 0.15s;
+}
+
+.map-dot:hover .map-dot-fill {
+  fill: rgba(255, 255, 255, 0.75);
+}
+
+.map-dot--active .map-dot-fill {
+  fill: oklch(0.85 0.18 75);
+}
+
+.map-dot-ring {
+  fill: oklch(0.85 0.18 75 / 0.2);
+}
+
 .year-row {
   display: flex;
   align-items: center;

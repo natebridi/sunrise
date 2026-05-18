@@ -12,7 +12,7 @@ const MONTH_NAMES_SHORT = [
 ];
 
 // Vertical pixels reserved at the top for the floating UI overlay
-const TOP_PAD = 160;
+const TOP_PAD = 210;
 
 interface Props {
   days: DayData[];
