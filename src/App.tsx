@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import SunChart from "./components/SunChart";
 import LocationMap from "./components/LocationMap";
 import { useSunData } from "./lib/useSunData";
@@ -13,6 +13,10 @@ const MONTH_NAMES = [
   "July", "August", "September", "October", "November", "December",
 ];
 const DAY_NAMES = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+
+const LOCATION_OPTIONS = LOCATIONS.map((l) => (
+  <option key={l.name} value={l.name}>{l.name}</option>
+));
 
 export default function App() {
   const [location, setLocation] = useState<Location | null>(null);
@@ -31,7 +35,7 @@ export default function App() {
   );
   const days = location !== null ? rawDays : [];
 
-  function selectLocation(loc: Location) {
+  const selectLocation = useCallback((loc: Location) => {
     setLocation(loc);
     if (year === today.getFullYear()) {
       const startOfYear = new Date(year, 0, 1);
@@ -40,7 +44,7 @@ export default function App() {
     } else {
       setScrubIndex(0);
     }
-  }
+  }, [year]);
 
   function handleLocationChange(e: React.ChangeEvent<HTMLSelectElement>) {
     const loc = LOCATIONS.find((l) => l.name === e.target.value);
@@ -83,9 +87,7 @@ export default function App() {
             onChange={handleLocationChange}
           >
             <option value="" disabled>Select a city…</option>
-            {LOCATIONS.map((l) => (
-              <option key={l.name} value={l.name}>{l.name}</option>
-            ))}
+            {LOCATION_OPTIONS}
           </select>
           <LocationMap selected={location} onSelect={selectLocation} />
         </div>
