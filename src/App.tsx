@@ -58,6 +58,13 @@ export default function App() {
 
   return (
     <div className="app">
+      <header className="app-header">
+        <h1>
+          <span className="app-title">Daylight</span>
+          <span className="app-desc">Simple sunrise & sunset visualizer</span>
+        </h1>
+      </header>
+
       <SunChart
         days={days}
         scrubIndex={scrubIndex}

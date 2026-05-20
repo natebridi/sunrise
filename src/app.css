@@ -11,8 +11,9 @@
   --text-primary: oklch(0.85 0.05 260);
   --text-secondary: oklch(0.9 0.05 260 / 0.6);
 
-  --font-size-xl: 1.25rem;
-  --font-size-lg: 1rem;
+  --font-size-xl: 1.5rem;
+  --font-size-lg: 1.25rem;
+  --font-size-md: 1rem;
   --font-size-sm: 0.8rem;
   --font-size-xs: 0.6rem;
 
@@ -114,10 +115,36 @@ body {
   margin: 0 4px;
 }
 
+/* ── App header ──────────────────────────────────────────────────────────── */
+.app-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 48px;
+  z-index: 110;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  pointer-events: none;
+}
+
+.app-title {
+  font-size: var(--font-size-md);
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255);
+}
+
+.app-desc {
+  font-size: var(--font-size-sm);
+}
+
 /* ── Floating UI — glass panels anchored to the top ─────────────────────── */
 .floating-ui {
   position: absolute;
-  top: 16px;
+  top: 56px;
   left: 16px;
   right: 16px;
   z-index: 10;
