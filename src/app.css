@@ -207,31 +207,177 @@ body {
   gap: 8px;
 }
 
-.location-select {
-  width: 100%;
-  background: rgba(255, 255, 255, 0.07);
-  border: 1px solid var(--border-strong);
-  border-radius: 6px;
-  color: rgba(255, 255, 255, 0.88);
-  padding: 6px 8px;
-  font-size: 0.82rem;
-  font-family: var(--font);
-  cursor: pointer;
-  appearance: none;
-  -webkit-appearance: none;
+/* ── Location card header (name + change button) ─────────────────────────── */
+.location-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 14px 8px;
 }
 
-.location-select option {
-  background: #0a0f1e;
+.location-name-text {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.change-btn {
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: var(--text-secondary);
+  border-radius: 4px;
+  padding: 3px 8px;
+  font-size: 0.7rem;
+  font-family: var(--font);
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: border-color 0.1s, color 0.1s;
+}
+
+.change-btn:hover {
+  border-color: rgba(255, 255, 255, 0.4);
   color: #fff;
 }
 
-.location-select:focus {
-  outline: none;
-  border-color: rgba(255, 255, 255, 0.3);
+/* ── Full-screen location picker ─────────────────────────────────────────── */
+.picker-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: var(--surface);
+  backdrop-filter: blur(24px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.3s ease, transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: top left;
+}
+
+.picker-overlay--out {
+  opacity: 0;
+  transform: scale(0.06);
+  pointer-events: none;
+}
+
+.picker-panel {
+  position: relative;
+  display: flex;
+  gap: 40px;
+  width: min(880px, 90vw);
+  height: min(560px, 82vh);
+  padding: 48px 40px 40px;
+}
+
+.picker-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  transition: color 0.1s;
+}
+
+.picker-close:hover {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.picker-list-col {
+  flex: 0 0 260px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-height: 0;
+}
+
+.picker-label {
+  margin: 0;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.picker-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  flex: 1;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+}
+
+.picker-item {
+  padding: 7px 10px;
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.65);
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background 0.1s, color 0.1s;
+}
+
+.picker-item:hover {
+  background: rgba(255, 255, 255, 0.07);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.picker-item--active {
+  color: oklch(0.85 0.18 75);
+  font-weight: 600;
+}
+
+.picker-map-col {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.picker-map-col .location-map {
+  width: 100%;
+  aspect-ratio: auto;
+  height: 100%;
+  max-height: 340px;
+}
+
+@media (max-width: 600px) {
+  .picker-panel {
+    flex-direction: column;
+    gap: 20px;
+    padding: 32px 20px 24px;
+    height: min(90vh, 700px);
+  }
+
+  .picker-list-col {
+    flex: 0 0 auto;
+    max-height: 45%;
+  }
+
+  .picker-map-col {
+    flex: 1;
+  }
 }
 
 /* ── Location minimap ─────────────────────────────────────────────────────── */
+:root {
+    --dots: oklch(0.55 0 200 / 0.4);
+    --location: oklch(0.45 0.05 200);
+    --location-hover: oklch(1 0 200);
+    --location-active: oklch(0.85 0.1 80);
+    --location-pulse: oklch(from var(--location-active) l c h / calc(alpha - 0.5));
+}
+
 .location-map {
   display: block;
   width: 100%;
@@ -240,9 +386,9 @@ body {
   overflow: hidden;
 }
 
-.location-map circle {
+.location-map .dots circle {
     stroke: none;
-    fill: oklch(0.35 0 200);
+    fill: var(--dots);
 }
 
 .map-dot {
@@ -250,21 +396,26 @@ body {
 }
 
 .map-dot-fill {
-  fill: rgba(255, 255, 255, 0.35);
+  fill: var(--location);
   transition: fill 0.15s, r 0.15s;
 }
 
 .map-dot:hover .map-dot-fill {
-  fill: rgba(255, 255, 255, 0.75);
+  fill: var(--location-hover);
 }
 
 .map-dot--active .map-dot-fill {
-  fill: oklch(0.85 0.18 75);
+  fill: var(--location-active);
 }
 
 .map-dot-ring {
-  fill: oklch(0.85 0.18 75 / 0.2);
+  fill: var(--location-pulse);
 }
+
+
+
+
+
 
 .year-row {
   display: flex;

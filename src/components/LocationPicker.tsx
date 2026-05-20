@@ -1,65 +1,67 @@
-import { useState } from "react";
-import LOCATIONS, { type Location } from "../lib/locations";
+import { memo, useEffect, useRef, useState } from "react";
+import type { Location } from "../lib/locations";
+import LOCATIONS from "../lib/locations";
+import LocationMap from "./LocationMap";
 
 interface Props {
-  onSelect: (loc: Location, year: number) => void;
-  currentYear: number;
+  selected: Location | null;
+  onSelect: (loc: Location) => void;
+  onDismiss: () => void;
 }
 
-export default function LocationPicker({ onSelect, currentYear }: Props) {
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const [year, setYear] = useState(currentYear);
+export default memo(function LocationPicker({ selected, onSelect, onDismiss }: Props) {
+  const [closing, setClosing] = useState(false);
+  const closingRef = useRef(false);
+  const activeItemRef = useRef<HTMLLIElement>(null);
 
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    onSelect(LOCATIONS[selectedIndex], year);
+  // Scroll the active item into view when the picker opens
+  useEffect(() => {
+    activeItemRef.current?.scrollIntoView({ block: "center", behavior: "instant" });
+  }, []);
+
+  function handleSelect(loc: Location) {
+    if (closingRef.current) return;
+    closingRef.current = true;
+    setClosing(true);
+    onSelect(loc);
+    setTimeout(onDismiss, 380);
   }
 
   return (
-    <div className="picker-overlay">
-      <div className="picker-box">
-        <h1>Daylight</h1>
-        <h2>Simple sunrise/sunset visualizer</h2>
-        <form onSubmit={handleSubmit}>
-          <div className="picker-row">
-            <label htmlFor="location-select">Location</label>
-            <select
-              id="location-select"
-              value={selectedIndex}
-              onChange={(e) => setSelectedIndex(Number(e.target.value))}
-            >
-              {LOCATIONS.map((loc, i) => (
-                <option key={loc.name} value={i}>
-                  {loc.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="picker-row">
-            <label>Year</label>
-            <div className="year-stepper">
-              <button
-                type="button"
-                onClick={() => setYear((y) => Math.max(1, y - 1))}
-              >
-                −
-              </button>
-              <span className="year-display">{year}</span>
-              <button
-                type="button"
-                onClick={() => setYear((y) => Math.min(3000, y + 1))}
-              >
-                +
-              </button>
-            </div>
-          </div>
-
-          <button type="submit" className="go-btn">
-            Go
+    <div
+      className={`picker-overlay${closing ? " picker-overlay--out" : ""}`}
+      onClick={selected ? onDismiss : undefined}
+    >
+      <div className="picker-panel" onClick={(e) => e.stopPropagation()}>
+        {selected && (
+          <button className="picker-close" onClick={onDismiss} aria-label="Close">
+            ✕
           </button>
-        </form>
+        )}
+
+        <div className="picker-list-col">
+          <p className="picker-label">Select a city</p>
+          <ul className="picker-list">
+            {LOCATIONS.map((loc) => {
+              const isActive = selected?.name === loc.name;
+              return (
+                <li
+                  key={loc.name}
+                  ref={isActive ? activeItemRef : null}
+                  className={`picker-item${isActive ? " picker-item--active" : ""}`}
+                  onClick={() => handleSelect(loc)}
+                >
+                  {loc.name}
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+
+        <div className="picker-map-col">
+          <LocationMap selected={selected} onSelect={handleSelect} />
+        </div>
       </div>
     </div>
   );
-}
+});
