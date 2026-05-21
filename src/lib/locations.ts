@@ -8,8 +8,8 @@ export interface Location {
 const LOCATIONS: Location[] = [
   { name: "Anchorage, AK", lat: 61.2181, lng: -149.9003, tz: "America/Anchorage" },
   { name: "Atlanta, GA", lat: 33.749, lng: -84.388, tz: "America/New_York" },
-  { name: "Austin, TX", lat: 30.2672, lng: -97.7431, tz: "America/Chicago" },
   { name: "Bangkok, Thailand", lat: 13.7563, lng: 100.5018, tz: "Asia/Bangkok" },
+  { name: "Bogotá, Colombia", lat: 4.711, lng: -74.0721, tz: "America/Bogota" },
   { name: "Beijing, China", lat: 39.9042, lng: 116.4074, tz: "Asia/Shanghai" },
   { name: "Berlin, Germany", lat: 52.52, lng: 13.405, tz: "Europe/Berlin" },
   { name: "Boston, MA", lat: 42.3601, lng: -71.0589, tz: "America/New_York" },

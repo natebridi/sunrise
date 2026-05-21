@@ -33,7 +33,7 @@
   z-index: 5;
   display: flex;
   gap: 2px;
-  background: rgba(0, 0, 0, 0.45);
+  background: var(--surface);
   border-radius: 8px;
   padding: 4px;
   backdrop-filter: blur(8px);
@@ -44,7 +44,7 @@
 }
 
 .zoom-btn {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--interactive);
   color: var(--text-secondary);
   border: none;
   padding: 0.25rem 0.55rem;

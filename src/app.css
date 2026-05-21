@@ -6,12 +6,21 @@
   --font: 'Space Grotesk', sans-serif;
   --band: #7bbbd4;
 
-  --surface: oklch(0.1 0.05 250 / 0.6);
+  --primary: oklch(0.7 0.15 50);
+  --accent: oklch(0.8 0.25 70);
+  --neutral: oklch(0.95 0.02 100);
 
-  --text-primary: oklch(0.85 0.03 260);
-  --text-secondary: oklch(0.9 0.05 260 / 0.6);
+  --text-primary: oklch(from var(--neutral) l c h);
+  --text-secondary: oklch(from var(--neutral) calc(l - 0.2) c h);
 
-  --accent: oklch(0.8 0.2 70);
+  --surface: oklch(from var(--primary) l calc(c - 0.1) h / calc(alpha - 0.9));
+  --border-strong: oklch(from var(--primary) l calc(c - 0.1) h);
+  --border-soft: oklch(from var(--border-strong) l c h / calc(alpha - 0.85));
+
+  --interactive: oklch(from var(--primary) calc(l - 0.5) calc(c - 0.1) h);
+  --hover: oklch(from var(--text-primary) l c h / calc(alpha - 0.9));
+
+  --on-interactive: oklch()
 
   --font-size-xl: 1.5rem;
   --font-size-lg: 1.25rem;
@@ -19,10 +28,7 @@
   --font-size-sm: 0.8rem;
   --font-size-xs: 0.6rem;
 
-  --border-strong: oklch(0.8 0.05 250);
-  --border-soft: oklch(from var(--border-strong) l c h / calc(alpha - 0.85));
 
-  --hover: oklch(from var(--text-primary) l c h / calc(alpha - 0.9))
 }
 
 body {
@@ -42,23 +48,20 @@ body {
 
 /* ── App header ──────────────────────────────────────────────────────────── */
 .app-header {
-    --header-width: 350px;
 
     position: absolute;
     top: 0;
-    width: var(--header-width);
+    width: 100vw;
     left: calc(50vw - calc(var(--header-width) / 2));
     height: 48px;
     z-index: 110;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    pointer-events: none;
+    justify-content: center;
     gap: 0.5rem;
-    border-bottom: 1px solid var(--text-primary);
 
     @media (width > 500px) {
-        --header-width: 500px;
+        gap: 1rem;
     }
 }
 
@@ -70,7 +73,7 @@ body {
     color: transparent;
     order: 1;
 
-    background: linear-gradient(to top, var(--text-primary) 50%, var(--accent));
+    background: linear-gradient(to bottom, var(--text-primary) 50%, var(--accent));
     -webkit-background-clip: text;
     background-clip: text;
 
@@ -92,19 +95,19 @@ body {
 .app-icon {
     order: 2;
     position: relative;
-    width: 4rem;
-    top: 12px;
-
-    @media (width > 500px) {
-        width: 5rem;
-        top: 9px;
-    }
+    width: 2.5rem;
+    align-self: baseline;
+    height: 2.75rem;
 
     line, path {
-        stroke-width: 7px;
+        stroke-width: 8px;
         stroke-linecap: round;
         fill: none;
         stroke: var(--text-primary);
+    }
+
+    @media (width > 500px) {
+        width: 3rem;
     }
 }
 

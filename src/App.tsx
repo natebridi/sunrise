@@ -61,9 +61,8 @@ export default function App() {
     <div className="app">
       <header className="app-header">
         <h1 className="app-title">Daylight</h1>
-        <span className="app-desc">Simple sunrise & sunset visualizer</span>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 348.55 121.62" className="app-icon">
-          {/*<line x1="3.5" y1="118.12" x2="345.05" y2="118.12" />*/}
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 348.55 121.62" className="app-icon" aria-hidden='true'>
+          <line x1="3.5" y1="118.12" x2="345.05" y2="118.12" />
           <path d="M91.65,104.45c15.91-29.29,46.95-49.18,82.62-49.18s66.39,19.68,82.37,48.71" />
           <line x1="174.28" y1="38.48" x2="174.28" y2="3.5" />
           <line x1="287.78" y1="57.83" x2="260.54" y2="79.76" />
@@ -71,6 +70,7 @@ export default function App() {
           <line x1="236.88" y1="17.63" x2="221.86" y2="49.22" />
           <line x1="111.67" y1="17.63" x2="126.7" y2="49.22" />
         </svg>
+        <span className="app-desc">Simple sunrise & sunset visualizer</span>
       </header>
 
       <SunChart
