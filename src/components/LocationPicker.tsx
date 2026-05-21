@@ -2,6 +2,7 @@ import { memo, useEffect, useRef, useState } from "react";
 import type { Location } from "../lib/locations";
 import LOCATIONS from "../lib/locations";
 import LocationMap from "./LocationMap";
+import "./styles/LocationPicker.css";
 
 interface Props {
   selected: Location | null;
@@ -40,7 +41,7 @@ export default memo(function LocationPicker({ selected, onSelect, onDismiss }: P
         )}
 
         <div className="picker-list-col">
-          <p className="picker-label">Select a city</p>
+          <p className="picker-label">or select a city</p>
           <ul className="picker-list">
             {LOCATIONS.map((loc) => {
               const isActive = selected?.name === loc.name;

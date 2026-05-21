@@ -1,5 +1,6 @@
 import { useRef, useEffect, useCallback, useState } from "react";
 import type { DayData } from "../lib/useSunData";
+import "./styles/SunChart.css";
 
 const MONTH_NAMES = [
   "January", "February", "March", "April", "May", "June",

@@ -8,8 +8,10 @@
 
   --surface: oklch(0.1 0.05 250 / 0.6);
 
-  --text-primary: oklch(0.85 0.05 260);
+  --text-primary: oklch(0.85 0.03 260);
   --text-secondary: oklch(0.9 0.05 260 / 0.6);
+
+  --accent: oklch(0.8 0.2 70);
 
   --font-size-xl: 1.5rem;
   --font-size-lg: 1.25rem;
@@ -19,6 +21,8 @@
 
   --border-strong: oklch(0.8 0.05 250);
   --border-soft: oklch(from var(--border-strong) l c h / calc(alpha - 0.85));
+
+  --hover: oklch(from var(--text-primary) l c h / calc(alpha - 0.9))
 }
 
 body {
@@ -36,109 +40,72 @@ body {
   overflow: hidden;
 }
 
-/* ── Chart fills the full viewport ───────────────────────────────────────── */
-.chart-wrapper {
-  position: absolute;
-  inset: 0;
-}
-
-.sun-canvas {
-  display: block;
-  width: 100%;
-  height: 100%;
-  background: oklch(0.02 0.2 200);
-}
-
-.scrubber {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  cursor: ew-resize;
-  margin: 0;
-  padding: 0;
-  appearance: none;
-  -webkit-appearance: none;
-}
-
-/* ── Zoom controls — floating strip at bottom center ─────────────────────── */
-.zoom-controls {
-  position: absolute;
-  bottom: 16px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 5;
-  display: flex;
-  gap: 2px;
-  background: rgba(0, 0, 0, 0.45);
-  border-radius: 8px;
-  padding: 4px;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  white-space: nowrap;
-  max-width: calc(100vw - 32px);
-  overflow-x: auto;
-}
-
-.zoom-btn {
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--text-secondary);
-  border: none;
-  padding: 0.25rem 0.55rem;
-  font-size: 0.72rem;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: 600;
-  letter-spacing: 0.03em;
-  font-family: var(--font);
-  transition: background 0.1s;
-  flex-shrink: 0;
-}
-
-.zoom-btn:hover {
-  background: rgba(255, 255, 255, 0.18);
-  color: #fff;
-}
-
-.zoom-btn.active {
-  background: var(--band);
-  color: #fff;
-}
-
-.zoom-sep {
-  width: 1px;
-  height: 14px;
-  background: rgba(255, 255, 255, 0.18);
-  flex-shrink: 0;
-  align-self: center;
-  margin: 0 4px;
-}
-
 /* ── App header ──────────────────────────────────────────────────────────── */
 .app-header {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 48px;
-  z-index: 110;
-  display: flex;
-  align-items: center;
-  padding: 0 20px;
-  pointer-events: none;
+    --header-width: 350px;
+
+    position: absolute;
+    top: 0;
+    width: var(--header-width);
+    left: calc(50vw - calc(var(--header-width) / 2));
+    height: 48px;
+    z-index: 110;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    pointer-events: none;
+    gap: 0.5rem;
+    border-bottom: 1px solid var(--text-primary);
+
+    @media (width > 500px) {
+        --header-width: 500px;
+    }
 }
 
 .app-title {
-  font-size: var(--font-size-md);
-  font-weight: 500;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255);
+    font-size: var(--font-size-md);
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: transparent;
+    order: 1;
+
+    background: linear-gradient(to top, var(--text-primary) 50%, var(--accent));
+    -webkit-background-clip: text;
+    background-clip: text;
+
+    @media (width > 500px) {
+        font-size: var(--font-size-lg);
+    }
 }
 
 .app-desc {
-  font-size: var(--font-size-sm);
+    font-size: var(--font-size-xs);
+    color: var(--text-secondary);
+    order: 3;
+
+    @media (width > 500px) {
+        font-size: var(--font-size-sm);
+    }
+}
+
+.app-icon {
+    order: 2;
+    position: relative;
+    width: 4rem;
+    top: 12px;
+
+    @media (width > 500px) {
+        width: 5rem;
+        top: 9px;
+    }
+
+    line, path {
+        stroke-width: 7px;
+        stroke-linecap: round;
+        fill: none;
+        stroke: var(--text-primary);
+    }
 }
 
 /* ── Floating UI — glass panels anchored to the top ─────────────────────── */
@@ -158,350 +125,10 @@ body {
   pointer-events: auto;
 }
 
-/* ── Card base ──────────────────────────────────────────────────────── */
-.card {
-  background: var(--surface);
-  border: 1px solid var(--border-soft);
-  border-radius: 14px;
-  font-family: var(--font);
-}
-
-/* ── Day stats card ───────────────────────────────────────────────────────── */
-.day-stats {
-  flex: 1;
-  min-width: 0;
-  padding: 14px 18px 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.stats-date {
-    font-size: var(--font-size-xl);
-    color: var(--text-primary);
-}
-
-.stats-times {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.stat-time {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.stat-label {
-  font-size: var(--font-size-xs);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--text-secondary);
-}
-
-.stat-value {
-  font-size: var(--font-size-xl);
-  font-weight: 500;
-  line-height: 1;
-}
-
-.stat-sep {
-  width: 1px;
-  height: 30px;
-  background: var(--border-soft);
-  flex-shrink: 0;
-}
-
-.stat-daylight {
-  font-size: var(--font-size-sm);
-  color: var(--text-secondary);
-}
-
-.empty-hint {
-  font-size: 0.88rem;
-  color: rgba(255, 255, 255, 0.45);
-  font-style: italic;
-  padding: 6px 0;
-}
-
-/* ── Year + location card ─────────────────────────────────────────────────── */
-.year-section {
-  padding: 12px 14px;
-  min-width: 180px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-/* ── Location card header (name + change button) ─────────────────────────── */
-.location-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  padding: 10px 14px 8px;
-}
-
-.location-name-text {
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  min-width: 0;
-}
-
-.change-btn {
-  background: none;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  color: var(--text-secondary);
-  border-radius: 4px;
-  padding: 3px 8px;
-  font-size: 0.7rem;
-  font-family: var(--font);
-  cursor: pointer;
-  white-space: nowrap;
-  flex-shrink: 0;
-  transition: border-color 0.1s, color 0.1s;
-}
-
-.change-btn:hover {
-  border-color: rgba(255, 255, 255, 0.4);
-  color: #fff;
-}
-
-/* ── Full-screen location picker ─────────────────────────────────────────── */
-.picker-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-  background: var(--surface);
-  backdrop-filter: blur(24px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: opacity 0.3s ease, transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-  transform-origin: top left;
-}
-
-.picker-overlay--out {
-  opacity: 0;
-  transform: scale(0.06);
-  pointer-events: none;
-}
-
-.picker-panel {
-  position: relative;
-  display: flex;
-  gap: 40px;
-  width: min(880px, 90vw);
-  height: min(560px, 82vh);
-  padding: 48px 40px 40px;
-}
-
-.picker-close {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  background: none;
-  border: none;
-  color: rgba(255, 255, 255, 0.35);
-  font-size: 1rem;
-  cursor: pointer;
-  padding: 4px 8px;
-  transition: color 0.1s;
-}
-
-.picker-close:hover {
-  color: rgba(255, 255, 255, 0.8);
-}
-
-.picker-list-col {
-  flex: 0 0 260px;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  min-height: 0;
-}
-
-.picker-label {
-  margin: 0;
-  font-size: 0.68rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--text-secondary);
-  flex-shrink: 0;
-}
-
-.picker-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  overflow-y: auto;
-  flex: 1;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
-}
-
-.picker-item {
-  padding: 7px 10px;
-  font-size: 0.95rem;
-  color: rgba(255, 255, 255, 0.65);
-  cursor: pointer;
-  border-radius: 6px;
-  transition: background 0.1s, color 0.1s;
-}
-
-.picker-item:hover {
-  background: rgba(255, 255, 255, 0.07);
-  color: rgba(255, 255, 255, 0.9);
-}
-
-.picker-item--active {
-  color: oklch(0.85 0.18 75);
-  font-weight: 600;
-}
-
-.picker-map-col {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  min-width: 0;
-}
-
-.picker-map-col .location-map {
-  width: 100%;
-  aspect-ratio: auto;
-  height: 100%;
-  max-height: 340px;
-}
-
-@media (max-width: 600px) {
-  .picker-panel {
-    flex-direction: column;
-    gap: 20px;
-    padding: 32px 20px 24px;
-    height: min(90vh, 700px);
-  }
-
-  .picker-list-col {
-    flex: 0 0 auto;
-    max-height: 45%;
-  }
-
-  .picker-map-col {
-    flex: 1;
-  }
-}
-
-/* ── Location minimap ─────────────────────────────────────────────────────── */
-:root {
-    --dots: oklch(0.55 0 200 / 0.4);
-    --location: oklch(0.45 0.05 200);
-    --location-hover: oklch(1 0 200);
-    --location-active: oklch(0.85 0.1 80);
-    --location-pulse: oklch(from var(--location-active) l c h / calc(alpha - 0.5));
-}
-
-.location-map {
-  display: block;
-  width: 100%;
-  aspect-ratio: 2 / 1;
-  border-radius: 6px;
-  overflow: hidden;
-}
-
-.location-map .dots circle {
-    stroke: none;
-    fill: var(--dots);
-}
-
-.map-dot {
-  cursor: pointer;
-}
-
-.map-dot-fill {
-  fill: var(--location);
-  transition: fill 0.15s, r 0.15s;
-}
-
-.map-dot:hover .map-dot-fill {
-  fill: var(--location-hover);
-}
-
-.map-dot--active .map-dot-fill {
-  fill: var(--location-active);
-}
-
-.map-dot-ring {
-  fill: var(--location-pulse);
-}
-
-
-
-
-
-
-.year-row {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-
-.year-value {
-  font-size: 1.05rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-}
-
-.year-btn {
-  background: rgba(255, 255, 255, 0.07);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  color: rgba(255, 255, 255, 0.65);
-  border-radius: 4px;
-  padding: 3px 10px;
-  cursor: pointer;
-  font-size: 0.8rem;
-  font-family: var(--font);
-  transition: background 0.1s;
-}
-
-.year-btn:hover {
-  background: rgba(255, 255, 255, 0.16);
-  color: #fff;
-}
-
-.year-mini-stats {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.38);
-  border-top: 1px solid rgba(255, 255, 255, 0.07);
-  padding-top: 6px;
-}
-
-
 /* ── Mobile adjustments ───────────────────────────────────────────────────── */
 @media (max-width: 520px) {
   .floating-ui {
     flex-wrap: wrap;
     gap: 8px;
-  }
-
-  .day-stats {
-    flex-basis: 100%;
-  }
-
-  .stat-value {
-    font-size: 1.1rem;
-  }
-
-  .year-section {
-    min-width: 150px;
-    flex: 1;
   }
 }

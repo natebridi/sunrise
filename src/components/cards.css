@@ -1,0 +1,168 @@
+/* ── Card base ──────────────────────────────────────────────────────── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  border-radius: 14px;
+  font-family: var(--font);
+}
+
+/* ── Day stats card ───────────────────────────────────────────────────────── */
+.day-stats {
+  flex: 1;
+  min-width: 0;
+  padding: 14px 18px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.stats-date {
+    font-size: var(--font-size-xl);
+    color: var(--text-primary);
+}
+
+.stats-times {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.stat-time {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.stat-label {
+  font-size: var(--font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-secondary);
+}
+
+.stat-value {
+  font-size: var(--font-size-xl);
+  font-weight: 500;
+  line-height: 1;
+}
+
+.stat-sep {
+  width: 1px;
+  height: 30px;
+  background: var(--border-soft);
+  flex-shrink: 0;
+}
+
+.stat-daylight {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.empty-hint {
+  font-size: 0.88rem;
+  color: rgba(255, 255, 255, 0.45);
+  font-style: italic;
+  padding: 6px 0;
+}
+
+/* ── Year + location card ─────────────────────────────────────────────────── */
+.year-section {
+  padding: 12px 14px;
+  min-width: 180px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ── Location card header (name + change button) ─────────────────────────── */
+.location-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 14px 8px;
+}
+
+.location-name-text {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.change-btn {
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: var(--text-secondary);
+  border-radius: 4px;
+  padding: 3px 8px;
+  font-size: 0.7rem;
+  font-family: var(--font);
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: border-color 0.1s, color 0.1s;
+}
+
+.change-btn:hover {
+  border-color: rgba(255, 255, 255, 0.4);
+  color: #fff;
+}
+
+.year-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.year-value {
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.year-btn {
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: rgba(255, 255, 255, 0.65);
+  border-radius: 4px;
+  padding: 3px 10px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-family: var(--font);
+  transition: background 0.1s;
+}
+
+.year-btn:hover {
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+}
+
+.year-mini-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.38);
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  padding-top: 6px;
+}
+
+/* ── Mobile adjustments ───────────────────────────────────────────────────── */
+@media (max-width: 520px) {
+  .day-stats {
+    flex-basis: 100%;
+  }
+
+  .stat-value {
+    font-size: 1.1rem;
+  }
+
+  .year-section {
+    min-width: 150px;
+    flex: 1;
+  }
+}
