@@ -6,21 +6,22 @@
   --font: 'Space Grotesk', sans-serif;
   --band: #7bbbd4;
 
-  --primary: oklch(0.7 0.15 50);
-  --accent: oklch(0.8 0.25 70);
+  --primary: oklch(0.7 0.15 40);
+  --accent: oklch(0.9 0.35 90);
   --neutral: oklch(0.95 0.02 100);
 
   --text-primary: oklch(from var(--neutral) l c h);
   --text-secondary: oklch(from var(--neutral) calc(l - 0.2) c h);
 
   --surface: oklch(from var(--primary) l calc(c - 0.1) h / calc(alpha - 0.9));
-  --border-strong: oklch(from var(--primary) l calc(c - 0.1) h);
-  --border-soft: oklch(from var(--border-strong) l c h / calc(alpha - 0.85));
+  --border-strong: oklch(from var(--primary) l calc(c - 0.12) h);
+  --border-soft: oklch(from var(--border-strong) calc(l - 0.4) c h);
 
   --interactive: oklch(from var(--primary) calc(l - 0.5) calc(c - 0.1) h);
-  --hover: oklch(from var(--text-primary) l c h / calc(alpha - 0.9));
-
-  --on-interactive: oklch()
+  --hover: oklch(from var(--interactive) calc(l + 0.1) c h);
+  --hover-border: oklch(from var(--hover) calc(l + 0.1) c h);
+  --active: oklch(from var(--accent) calc(l - 0.3) c h);
+  --active-border: oklch(from var(--active) calc(l + 0.1) c h);
 
   --font-size-xl: 1.5rem;
   --font-size-lg: 1.25rem;
@@ -45,6 +46,37 @@ body {
   height: 100dvh;
   overflow: hidden;
 }
+
+/* ── Buttons ──────────────────────────────────────────────────────────── */
+.btn {
+    font-family: var(--font);
+    font-size: var(--font-size-md);
+    background: var(--interactive);
+    border: 1px solid var(--border-soft);
+    color: var(--text-primary);
+    border-radius: 0.25rem;
+    padding: 0.25rem 0.5rem;
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+
+    &.btn--active {
+        background-color: var(--active);
+        border-color: var(--active-border);
+    }
+
+    &:hover {
+        background: var(--hover);
+        border-color: var(--hover-border);
+    }
+
+    &.btn--small {
+        font-size: var(--font-size-sm);
+    }
+}
+
 
 /* ── App header ──────────────────────────────────────────────────────────── */
 .app-header {

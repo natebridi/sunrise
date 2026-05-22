@@ -97,7 +97,7 @@ export default function App() {
           <div className="card location">
             <div className="location-header">
               <span className="location-name-text">{location?.name}</span>
-              <button className="change-btn" onClick={() => setPicking(true)}>
+              <button className="btn btn--small" onClick={() => setPicking(true)}>
                 Change location
               </button>
             </div>
@@ -134,9 +134,9 @@ export default function App() {
           {/* Year */}
           <div className="card year-section">
             <div className="year-row">
-              <button className="year-btn" onClick={() => setYear((y) => y - 1)}>◁</button>
+              <button className="btn btn--small" onClick={() => setYear((y) => y - 1)}>&larr;</button>
               <span className="year-value">{year}</span>
-              <button className="year-btn" onClick={() => setYear((y) => y + 1)}>▷</button>
+              <button className="btn btn--small" onClick={() => setYear((y) => y + 1)}>&rarr;</button>
             </div>
             {yearStats && (
               <div className="year-mini-stats">

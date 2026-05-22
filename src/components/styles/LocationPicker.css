@@ -59,38 +59,12 @@
   flex-shrink: 0;
 }
 
-.picker-geo-btn {
-  background: var(--interactive);
-  border: 1px solid var(--border-soft);
-  color: var(--text-primary);
-  border-radius: 6px;
-  padding: 8px 12px;
-  font-size: 0.85rem;
-  font-family: var(--font);
-  cursor: pointer;
-  text-align: left;
-  transition: background 0.1s, border-color 0.1s;
-  display: flex;
-  gap: 0.5rem;
-}
-
 .btn-icon {
     width: 1rem;
 
     path {
         fill:
     }
-}
-
-.picker-geo-btn:hover:not(:disabled) {
-  background: var(--hover);
-  border-color: var(--border-strong);
-}
-
-.picker-geo-btn--loading,
-.picker-geo-btn:disabled {
-  opacity: 0.55;
-  cursor: default;
 }
 
 .picker-geo-error {

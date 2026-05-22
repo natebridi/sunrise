@@ -79,7 +79,7 @@ export default memo(function LocationPicker({ selected, onSelect, onDismiss }: P
         <div className="picker-list-col">
           <div className="picker-geo">
             <button
-              className={`picker-geo-btn${geoStatus === "loading" ? " picker-geo-btn--loading" : ""}`}
+              className={`btn${geoStatus === "loading" ? " btn--loading" : ""}`}
               onClick={handleUseCurrentLocation}
               disabled={geoStatus === "loading"}
             >

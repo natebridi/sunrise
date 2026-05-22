@@ -315,7 +315,7 @@ export default function SunChart({ days, scrubIndex, onScrub, showGrid, twelveHo
 
       <div className="zoom-controls">
         <button
-          className={focusedMonth === null ? "zoom-btn active" : "zoom-btn"}
+          className={focusedMonth === null ? "btn btn--small btn--active" : "btn btn--small"}
           onClick={() => setFocusedMonth(null)}
         >
           Year
@@ -323,7 +323,7 @@ export default function SunChart({ days, scrubIndex, onScrub, showGrid, twelveHo
         {MONTH_NAMES.map((name, i) => (
           <button
             key={name}
-            className={focusedMonth === i ? "zoom-btn active" : "zoom-btn"}
+            className={focusedMonth === i ? "btn btn--small btn--active" : "btn btn--small"}
             onClick={() => {
               setFocusedMonth(i);
               const idx = days.findIndex((d) => d.month === i);
@@ -334,10 +334,10 @@ export default function SunChart({ days, scrubIndex, onScrub, showGrid, twelveHo
           </button>
         ))}
         <div className="zoom-sep" />
-        <button className="zoom-btn" onClick={onToggleClock}>
+        <button className="btn btn--small" onClick={onToggleClock}>
           {twelveHour ? "24hr" : "12hr"}
         </button>
-        <button className="zoom-btn" onClick={onToggleGrid}>
+        <button className="btn btn--small" onClick={onToggleGrid}>
           {showGrid ? "No grid" : "Grid"}
         </button>
       </div>
