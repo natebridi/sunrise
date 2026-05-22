@@ -297,6 +297,10 @@ export default function SunChart({ days, scrubIndex, onScrub, showGrid, twelveHo
     }
   }
 
+  const activeIndicator = <svg className="btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+    <path fill="currentColor" d="M165.50 346.50Q203 384 256 384Q309 384 346.50 346.50Q384 309 384 256Q384 203 346.50 165.50Q309 128 256 128Q203 128 165.50 165.50Q128 203 128 256Q128 309 165.50 346.50M497 256L427 327L427 427L327 427L256 497L185 427L85 427L85 327L15 256L85 185L85 85L185 85L256 15L327 85L427 85L427 185" />
+  </svg>;
+
   return (
     <div className="chart-wrapper">
 
@@ -318,6 +322,7 @@ export default function SunChart({ days, scrubIndex, onScrub, showGrid, twelveHo
           className={focusedMonth === null ? "btn btn--small btn--active" : "btn btn--small"}
           onClick={() => setFocusedMonth(null)}
         >
+          {focusedMonth === null && activeIndicator}
           Year
         </button>
         {MONTH_NAMES.map((name, i) => (
@@ -330,6 +335,7 @@ export default function SunChart({ days, scrubIndex, onScrub, showGrid, twelveHo
               if (idx >= 0) onScrub(idx);
             }}
           >
+            {focusedMonth === i && activeIndicator}
             {name.slice(0, 3)}
           </button>
         ))}

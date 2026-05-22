@@ -134,9 +134,13 @@ export default function App() {
           {/* Year */}
           <div className="card year-section">
             <div className="year-row">
-              <button className="btn btn--small" onClick={() => setYear((y) => y - 1)}>&larr;</button>
+              <button className="btn btn--icon" onClick={() => setYear((y) => y - 1)}>
+                <svg className="btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M231 256L329 354L299 384L171 256L299 128L329 158"/></svg>
+              </button>
               <span className="year-value">{year}</span>
-              <button className="btn btn--small" onClick={() => setYear((y) => y + 1)}>&rarr;</button>
+              <button className="btn btn--icon" onClick={() => setYear((y) => y + 1)}>
+                <svg className="btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M213 384L183 354L281 256L183 158L213 128L341 256"/></svg>
+              </button>
             </div>
             {yearStats && (
               <div className="year-mini-stats">
