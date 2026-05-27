@@ -29,7 +29,7 @@ export default memo(function LocationPicker({ selected, onSelect, onDismiss }: P
     closingRef.current = true;
     setClosing(true);
     onSelect(loc);
-    setTimeout(onDismiss, 380);
+    setTimeout(onDismiss, 200);
   }
 
   function handleUseCurrentLocation() {
@@ -70,11 +70,6 @@ export default memo(function LocationPicker({ selected, onSelect, onDismiss }: P
       onClick={selected ? onDismiss : undefined}
     >
       <div className="picker-panel" onClick={(e) => e.stopPropagation()}>
-        {selected && (
-          <button className="picker-close" onClick={onDismiss} aria-label="Close">
-            ✕
-          </button>
-        )}
 
         <div className="picker-list-col">
           <div className="picker-geo">
@@ -114,6 +109,12 @@ export default memo(function LocationPicker({ selected, onSelect, onDismiss }: P
         <div className="picker-map-col">
           <LocationMap selected={selected} onSelect={handleSelect} />
         </div>
+
+        {selected && (
+          <button className="btn btn--outline picker-close" onClick={onDismiss} aria-label="Close">
+            Return
+          </button>
+        )}
       </div>
     </div>
   );
