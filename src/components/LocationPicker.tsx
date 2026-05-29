@@ -73,6 +73,7 @@ export default memo(function LocationPicker({ selected, onSelect, onDismiss }: P
 
         <div className="picker-list-col">
           <div className="picker-geo">
+            <h3 className="picker-geo-title">Annual daylight for ...</h3>
             <button
               className={`btn${geoStatus === "loading" ? " btn--loading" : ""}`}
               onClick={handleUseCurrentLocation}
@@ -81,7 +82,7 @@ export default memo(function LocationPicker({ selected, onSelect, onDismiss }: P
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" className="btn-icon">
                 <path d="M150.50 361.50Q194 405 256 405Q318 405 361.50 361.50Q405 318 405 256Q405 194 361.50 150.50Q318 107 256 107Q194 107 150.50 150.50Q107 194 107 256Q107 318 150.50 361.50M447 235L491 235L491 277L447 277Q440 340 390 390Q340 440 277 447L277 491L235 491L235 447Q172 440 122 390Q72 340 65 277L21 277L21 235L65 235Q72 172 122 122Q172 72 235 65L235 21L277 21L277 65Q340 72 390 122Q440 172 447 235M196 196Q221 171 256 171Q291 171 316 196Q341 221 341 256Q341 291 316 316Q291 341 256 341Q221 341 196 316Q171 291 171 256Q171 221 196 196" fill="currentColor" />
               </svg>
-              {geoStatus === "loading" ? "Locating…" : "Use current location"}
+              {geoStatus === "loading" ? "Locating…" : "Current location"}
 
             </button>
             {geoStatus === "error" && geoError && (

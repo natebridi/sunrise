@@ -35,8 +35,7 @@
 body {
   margin: 0;
   padding: 0;
-  /*background: oklch(0.02 0.2 200);*/
-  background: oklch(1 0 0);
+  background: oklch(0.025 0.12 240);
   font-family: var(--font);
   color: var(--text-primary);
 }

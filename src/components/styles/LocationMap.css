@@ -8,11 +8,15 @@
 }
 
 .location-map {
-  display: block;
+  display: none;
   width: 100%;
   aspect-ratio: 2 / 1;
   border-radius: 6px;
   overflow: hidden;
+
+  @media (width > 500px) {
+      display: block;
+  }
 }
 
 .location-map .dots circle {
