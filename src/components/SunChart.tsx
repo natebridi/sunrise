@@ -350,11 +350,6 @@ export default function SunChart({ days, scrubIndex, onScrub, showGrid, twelveHo
 
 function c01(v: number) { return Math.max(0, Math.min(1, v)); }
 
-// Kept for speed-based glow when re-enabled
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function glowPx(speed: number): number {
-  return Math.max(8, Math.min(50, 16 / (speed * 0.25 + 0.18)));
-}
 
 function drawScrubber(
   ctx: CanvasRenderingContext2D,
