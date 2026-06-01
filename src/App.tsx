@@ -61,6 +61,8 @@ export default function App() {
     ? Math.floor((today.getTime() - new Date(year, 0, 1).getTime()) / 86400000)
     : null;
 
+  const yearStatSep = " \u00a0–\u00a0 ";
+
   return (
     <div className="app">
       <header className="app-header">
@@ -155,25 +157,31 @@ export default function App() {
                     <div className="year-mini-stats">
                       <span className="mini-stat-label">Earliest rise</span>
                       <span className="mini-stat-value">
+                        {twelveHour ? days[yearStats.earliestIdx].risef : days[yearStats.earliestIdx].risef24}
+                        {yearStatSep}
                         {MONTH_NAMES[days[yearStats.earliestIdx].month].slice(0, 3)}{" "}
                         {days[yearStats.earliestIdx].day}
                       </span>
                       <span className="mini-stat-label">Latest set</span>
                       <span className="mini-stat-value">
-                      {MONTH_NAMES[days[yearStats.latestIdx].month].slice(0, 3)}{" "}
+                        {twelveHour ? days[yearStats.latestIdx].setf : days[yearStats.latestIdx].setf24}
+                        {yearStatSep}
+                        {MONTH_NAMES[days[yearStats.latestIdx].month].slice(0, 3)}{" "}
                         {days[yearStats.latestIdx].day}
                       </span>
                       <span className="mini-stat-label">Longest</span>
                       <span className="mini-stat-value">
                         {((days[yearStats.longestIdx].set - days[yearStats.longestIdx].rise) / 60).toFixed(1)} hrs
-                        ({MONTH_NAMES[days[yearStats.longestIdx].month].slice(0, 3)}{" "}
-                        {days[yearStats.longestIdx].day})
+                        {yearStatSep}
+                        {MONTH_NAMES[days[yearStats.longestIdx].month].slice(0, 3)}{" "}
+                        {days[yearStats.longestIdx].day}
                       </span>
                       <span className="mini-stat-label">Shortest</span>
                       <span className="mini-stat-value">
                         {((days[yearStats.shortestIdx].set - days[yearStats.shortestIdx].rise) / 60).toFixed(1)} hrs
-                        ({MONTH_NAMES[days[yearStats.shortestIdx].month].slice(0, 3)}{" "}
-                        {days[yearStats.shortestIdx].day})
+                        {yearStatSep}
+                        {MONTH_NAMES[days[yearStats.shortestIdx].month].slice(0, 3)}{" "}
+                        {days[yearStats.shortestIdx].day}
                       </span>
                     </div>
                   )}
