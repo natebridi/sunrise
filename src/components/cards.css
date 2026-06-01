@@ -58,9 +58,26 @@
   justify-self: stretch;
 }
 
+.day-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    justify-content: flex-start;
+    align-items: flex-start;
+
+    @media (width > 1000px) {
+        flex-direction: row;
+        gap: 1rem;
+    }
+}
+
 .display-day {
   font-size: var(--font-size-lg);
   color: var(--text-primary);
+
+  @media (width > 1000px) {
+      font-size: var(--font-size-xl);
+  }
 }
 
 .stats-times {
@@ -85,6 +102,10 @@
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--text-secondary);
+
+  @media (width > 1000px) {
+      font-size: var(--font-size-sm);
+  }
 }
 
 .stat-value {
@@ -94,6 +115,10 @@
 
   @media (width > 1000px) {
       font-size: var(--font-size-3xl);
+  }
+
+  @media (width > 1200px) {
+      font-size: var(--font-size-4xl);
   }
 }
 

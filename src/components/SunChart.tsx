@@ -275,19 +275,9 @@ export default function SunChart({ days, scrubIndex, onScrub, showGrid, twelveHo
     return () => ro.disconnect();
   }, [draw]);
 
-  const scrubberPercent = (() => {
-    if (days.length === 0) return 0;
-    if (focusedMonth !== null) {
-      const startIdx = days.findIndex((d) => d.month === focusedMonth);
-      const endIdx   = days.findLastIndex((d) => d.month === focusedMonth);
-      const clamped  = Math.max(startIdx, Math.min(endIdx, scrubIndex));
-      return ((clamped - startIdx) / (endIdx - startIdx)) * 100;
-    }
-    return (scrubIndex / (days.length - 1)) * 100;
-  })();
-
-  function handleRangeChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const pct = Number(e.target.value) / 100;
+  function scrubFromPointer(e: React.PointerEvent<HTMLDivElement>) {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
     if (focusedMonth !== null) {
       const startIdx = days.findIndex((d) => d.month === focusedMonth);
       const endIdx   = days.findLastIndex((d) => d.month === focusedMonth);
@@ -295,6 +285,17 @@ export default function SunChart({ days, scrubIndex, onScrub, showGrid, twelveHo
     } else {
       onScrub(Math.round(pct * (days.length - 1)));
     }
+  }
+
+  function handlePointerDown(e: React.PointerEvent<HTMLDivElement>) {
+    if (days.length === 0) return;
+    e.currentTarget.setPointerCapture(e.pointerId);
+    scrubFromPointer(e);
+  }
+
+  function handlePointerMove(e: React.PointerEvent<HTMLDivElement>) {
+    if (!e.currentTarget.hasPointerCapture(e.pointerId)) return;
+    scrubFromPointer(e);
   }
 
   const activeIndicator = <svg className="btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
@@ -305,17 +306,11 @@ export default function SunChart({ days, scrubIndex, onScrub, showGrid, twelveHo
     <div className="chart-wrapper">
 
       <canvas ref={canvasRef} className="sun-canvas" />
-      {days.length > 0 && (
-        <input
-          type="range"
-          className="scrubber"
-          min={0}
-          max={100}
-          step={0.01}
-          value={scrubberPercent}
-          onChange={handleRangeChange}
-        />
-      )}
+      <div
+        className="scrubber"
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+      />
 
       <div className="zoom-controls">
         <button

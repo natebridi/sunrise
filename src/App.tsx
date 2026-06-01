@@ -57,6 +57,10 @@ export default function App() {
 
   const current = days[scrubIndex];
 
+  const todayIndex = year === today.getFullYear()
+    ? Math.floor((today.getTime() - new Date(year, 0, 1).getTime()) / 86400000)
+    : null;
+
   return (
     <div className="app">
       <header className="app-header">
@@ -109,8 +113,18 @@ export default function App() {
             {current ? (
               <div className="stats-cols">
                 <div className="stats-left">
-                  <div className="display-day">
-                    {DAY_NAMES[current.dayOfWeek].slice(0, 3)}, {MONTH_NAMES[current.month]} {current.day}
+                  <div className="day-row">
+                    <div className="display-day">
+                      {DAY_NAMES[current.dayOfWeek].slice(0, 3)}, {MONTH_NAMES[current.month]} {current.day}
+                    </div>
+                    {todayIndex !== null && scrubIndex !== todayIndex && (
+                      <button
+                        className="btn btn--small btn--outline today-btn"
+                        onClick={() => setScrubIndex(todayIndex)}
+                      >
+                        Jump to today
+                      </button>
+                    )}
                   </div>
                   <div className="stats-times">
                     <div className="stat-time">

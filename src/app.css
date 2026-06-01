@@ -23,6 +23,7 @@
   --active: oklch(from var(--accent) calc(l - 0.3) c h);
   --active-border: oklch(from var(--active) calc(l + 0.1) c h);
 
+  --font-size-4xl: 3rem;
   --font-size-3xl: 2.25rem;
   --font-size-2xl: 1.75rem;
   --font-size-xl: 1.5rem;
