@@ -6,42 +6,78 @@
   font-family: var(--font);
 }
 
+
+.floating-ui {
+  position: absolute;
+  top: 56px;
+  left: 16px;
+  right: 16px;
+  z-index: 10;
+  display: flex;
+  gap: 10px;
+  align-items: stretch;
+  pointer-events: none;
+}
+
+.floating-ui > * {
+  pointer-events: auto;
+}
+
+
 /* ── Day stats card ───────────────────────────────────────────────────────── */
 .day-stats {
   flex: 1;
   min-width: 0;
-  padding: 14px 18px 12px;
+  display: grid;
+  justify-content: stretch;
+}
+
+.stats-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 16px;
+
+  @media (width > 550px) {
+      grid-template-columns: 2fr 1fr;
+  }
+}
+
+.stats-left {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 1rem;
+}
+
+.stats-right {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  padding: 1rem;
+  border-left: 1px solid var(--border-soft);
+  justify-self: stretch;
 }
 
-.display-date {
-    font-size: var(--font-size-xl);
-    color: var(--text-primary);
-    display: flex;
-}
-
-.stats-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+.display-day {
+  font-size: var(--font-size-lg);
+  color: var(--text-primary);
 }
 
 .stats-times {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 1rem;
+  gap: 6px;
 
-  @media (width > 500px) {
+  @media (width > 800px) {
       flex-direction: row;
+      gap: 1rem;
   }
 }
 
 .stat-time {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 1px;
 }
 
 .stat-label {
@@ -55,12 +91,15 @@
   font-size: var(--font-size-xl);
   font-weight: 500;
   line-height: 1;
+
+  @media (width > 1000px) {
+      font-size: var(--font-size-3xl);
+  }
 }
 
 .stat-daylight {
   font-size: var(--font-size-sm);
   color: var(--text-secondary);
-  grid-row: 2;
 }
 
 .empty-hint {
@@ -70,22 +109,13 @@
   padding: 6px 0;
 }
 
-/* ── Year + location card ─────────────────────────────────────────────────── */
-.year-section {
-  padding: 12px 14px;
-  min-width: 180px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
 /* ── Location card header (name + change button) ─────────────────────────── */
 .location-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding: 10px 14px 8px;
+  padding: 0.5rem 1rem;
 }
 
 .location-name-text {
@@ -98,40 +128,64 @@
   min-width: 0;
 }
 
+/* ── Year controls ────────────────────────────────────────────────────────── */
 .display-year {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
 }
 
 .year-value {
-  font-size: 1.05rem;
-  font-weight: 600;
+  font-size: var(--font-size-lg);
   letter-spacing: 0.04em;
+  padding: 0 2px;
 }
 
 .year-mini-stats {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.38);
-  border-top: 1px solid rgba(255, 255, 255, 0.07);
   padding-top: 6px;
 }
 
-/* ── Mobile adjustments ───────────────────────────────────────────────────── */
-@media (max-width: 520px) {
-  .day-stats {
-    flex-basis: 100%;
+.mini-stat-label {
+    margin-top: 3px;
+    font-size: var(--font-size-xs);
+    color: var(--text-secondary);
+}
+
+.mini-stat-value {
+    font-size: var(--font-size-xs);
+    color: var(--text-primary);
+    font-weight: 500;
+
+    @media (width > 1000px) {
+        font-size: var(--font-size-sm);
+    }
+}
+
+
+
+/* ── Mobile: location + stats merge into one unified card ─────────────────── */
+@media (max-width: 620px) {
+  .floating-ui {
+    flex-direction: column;
+    gap: 0;
+    justify-content: stretch;
+    align-items: stretch;
   }
 
-  .stat-value {
-    font-size: 1.1rem;
+  .card.location {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom: none;
   }
 
-  .year-section {
-    min-width: 150px;
-    flex: 1;
+  .card.location .location-map {
+    display: none;
+  }
+
+  .card.day-stats {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
   }
 }

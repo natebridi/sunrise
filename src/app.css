@@ -15,7 +15,7 @@
   --surface: oklch(from var(--primary) l calc(c - 0.1) h / calc(alpha - 0.8));
   --surface-dark: oklch(0.07 0.25 200 / 0.8);
   --border-strong: oklch(from var(--primary) l calc(c - 0.12) h);
-  --border-soft: oklch(from var(--border-strong) calc(l - 0.4) c h);
+  --border-soft: oklch(from var(--border-strong) calc(l - 0.35) c h);
 
   --interactive: oklch(from var(--primary) calc(l - 0.5) calc(c - 0.1) h);
   --hover: oklch(from var(--interactive) calc(l + 0.1) c h);
@@ -23,6 +23,8 @@
   --active: oklch(from var(--accent) calc(l - 0.3) c h);
   --active-border: oklch(from var(--active) calc(l + 0.1) c h);
 
+  --font-size-3xl: 2.25rem;
+  --font-size-2xl: 1.75rem;
   --font-size-xl: 1.5rem;
   --font-size-lg: 1.25rem;
   --font-size-md: 1rem;
@@ -136,7 +138,7 @@ body {
 }
 
 .app-desc {
-    font-size: var(--font-size-xs);
+    font-size: var(--font-size-sm);
     color: var(--text-secondary);
     order: 3;
 
@@ -162,29 +164,4 @@ body {
     @media (width > 500px) {
         width: 3rem;
     }
-}
-
-/* ── Floating UI — glass panels anchored to the top ─────────────────────── */
-.floating-ui {
-  position: absolute;
-  top: 56px;
-  left: 16px;
-  right: 16px;
-  z-index: 10;
-  display: flex;
-  gap: 10px;
-  align-items: flex-start;
-  pointer-events: none;
-}
-
-.floating-ui > * {
-  pointer-events: auto;
-}
-
-/* ── Mobile adjustments ───────────────────────────────────────────────────── */
-@media (max-width: 520px) {
-  .floating-ui {
-    flex-wrap: wrap;
-    gap: 8px;
-  }
 }

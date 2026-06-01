@@ -107,25 +107,11 @@ export default function App() {
           {/* Day stats */}
           <div className="card day-stats">
             {current ? (
-              <>
-                <div className="display-date">
+              <div className="stats-cols">
+                <div className="stats-left">
                   <div className="display-day">
                     {DAY_NAMES[current.dayOfWeek].slice(0, 3)}, {MONTH_NAMES[current.month]} {current.day}
                   </div>
-                  <div className="display-year">
-                    <button className="btn btn--icon" onClick={() => setYear((y) => y - 1)}>
-                      <svg className="btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M231 256L329 354L299 384L171 256L299 128L329 158"/></svg>
-                    </button>
-                    <span className="year-value">{year}</span>
-                    <button className="btn btn--icon" onClick={() => setYear((y) => y + 1)}>
-                      <svg className="btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M213 384L183 354L281 256L183 158L213 128L341 256"/></svg>
-                    </button>
-                  </div>
-                </div>
-
-                <div className="stats-grid">
-
-
                   <div className="stats-times">
                     <div className="stat-time">
                       <span className="stat-label">Rise</span>
@@ -139,35 +125,46 @@ export default function App() {
                   <div className="stat-daylight">
                     {((current.set - current.rise) / 60).toFixed(1)} hrs daylight
                   </div>
-
-                  <div className="year-section">
-
-                    {yearStats && (
-                      <div className="year-mini-stats">
-                        <span>
-                          Earliest rise: 00:00 ({MONTH_NAMES[days[yearStats.earliestIdx].month]}{" "}
-                          {days[yearStats.earliestIdx].day})
-                        </span>
-                        <span>
-                          Latest set: 00:00 ({MONTH_NAMES[days[yearStats.latestIdx].month]}{" "}
-                          {days[yearStats.latestIdx].day})
-                        </span>
-                        <span>
-                          Longest day: {((days[yearStats.longestIdx].set - days[yearStats.longestIdx].rise) / 60).toFixed(1)} hours
-                          ({MONTH_NAMES[days[yearStats.longestIdx].month]}{" "}
-                          {days[yearStats.longestIdx].day})
-                        </span>
-                        <span>
-                          Shortest day: {((days[yearStats.shortestIdx].set - days[yearStats.shortestIdx].rise) / 60).toFixed(1)} hours
-                          ({MONTH_NAMES[days[yearStats.shortestIdx].month]}{" "}
-                          {days[yearStats.shortestIdx].day})
-                        </span>
-                      </div>
-                    )}
-                  </div>
-
                 </div>
-              </>
+
+                <div className="stats-right">
+                  <div className="display-year">
+                    <button className="btn btn--icon btn--small" onClick={() => setYear((y) => y - 1)}>
+                      <svg className="btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M231 256L329 354L299 384L171 256L299 128L329 158"/></svg>
+                    </button>
+                    <span className="year-value">{year}</span>
+                    <button className="btn btn--icon btn--small" onClick={() => setYear((y) => y + 1)}>
+                      <svg className="btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M213 384L183 354L281 256L183 158L213 128L341 256"/></svg>
+                    </button>
+                  </div>
+                  {yearStats && (
+                    <div className="year-mini-stats">
+                      <span className="mini-stat-label">Earliest rise</span>
+                      <span className="mini-stat-value">
+                        {MONTH_NAMES[days[yearStats.earliestIdx].month].slice(0, 3)}{" "}
+                        {days[yearStats.earliestIdx].day}
+                      </span>
+                      <span className="mini-stat-label">Latest set</span>
+                      <span className="mini-stat-value">
+                      {MONTH_NAMES[days[yearStats.latestIdx].month].slice(0, 3)}{" "}
+                        {days[yearStats.latestIdx].day}
+                      </span>
+                      <span className="mini-stat-label">Longest</span>
+                      <span className="mini-stat-value">
+                        {((days[yearStats.longestIdx].set - days[yearStats.longestIdx].rise) / 60).toFixed(1)} hrs
+                        ({MONTH_NAMES[days[yearStats.longestIdx].month].slice(0, 3)}{" "}
+                        {days[yearStats.longestIdx].day})
+                      </span>
+                      <span className="mini-stat-label">Shortest</span>
+                      <span className="mini-stat-value">
+                        {((days[yearStats.shortestIdx].set - days[yearStats.shortestIdx].rise) / 60).toFixed(1)} hrs
+                        ({MONTH_NAMES[days[yearStats.shortestIdx].month].slice(0, 3)}{" "}
+                        {days[yearStats.shortestIdx].day})
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
             ) : (
               <div className="empty-hint">Select a location to begin</div>
             )}
