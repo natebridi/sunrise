@@ -32,11 +32,12 @@ interface Props {
   twelveHour: boolean;
   onToggleClock: () => void;
   onToggleGrid: () => void;
+  bare?: boolean;
 }
 
 const TYPEFACE = "'Space Grotesk'";
 
-export default function SunChart({ days, scrubIndex, onScrub, showGrid, twelveHour, onToggleClock, onToggleGrid }: Props) {
+export default function SunChart({ days, scrubIndex, onScrub, showGrid, twelveHour, onToggleClock, onToggleGrid, bare = false }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const noiseRef = useRef<HTMLCanvasElement | null>(null);
   const starRef = useRef<HTMLCanvasElement | null>(null);
@@ -202,7 +203,7 @@ export default function SunChart({ days, scrubIndex, onScrub, showGrid, twelveHo
 
     ctx.drawImage(getStars(cssW, cssH), 0, 0);
 
-    if (days.length === 0) {
+    if (bare || days.length === 0) {
       ctx.globalAlpha = 0.05;
       ctx.drawImage(getNoise(cssW, cssH), 0, 0);
       ctx.globalAlpha = 1;
@@ -265,7 +266,7 @@ export default function SunChart({ days, scrubIndex, onScrub, showGrid, twelveHo
 
     ctx.restore();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [days, showGrid, focusedMonth, scrubIndex, twelveHour]);
+  }, [days, showGrid, focusedMonth, scrubIndex, twelveHour, bare]);
 
   useEffect(() => { draw(); }, [draw]);
 
@@ -306,42 +307,46 @@ export default function SunChart({ days, scrubIndex, onScrub, showGrid, twelveHo
     <div className="chart-wrapper">
 
       <canvas ref={canvasRef} className="sun-canvas" />
-      <div
-        className="scrubber"
-        onPointerDown={handlePointerDown}
-        onPointerMove={handlePointerMove}
-      />
+      {!bare && (
+        <div
+          className="scrubber"
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+        />
+      )}
 
-      <div className="zoom-controls">
-        <button
-          className={focusedMonth === null ? "btn btn--small btn--active" : "btn btn--small"}
-          onClick={() => setFocusedMonth(null)}
-        >
-          {focusedMonth === null && activeIndicator}
-          Year
-        </button>
-        {MONTH_NAMES.map((name, i) => (
+      {!bare && (
+        <div className="zoom-controls">
           <button
-            key={name}
-            className={focusedMonth === i ? "btn btn--small btn--active" : "btn btn--small"}
-            onClick={() => {
-              setFocusedMonth(i);
-              const idx = days.findIndex((d) => d.month === i);
-              if (idx >= 0) onScrub(idx);
-            }}
+            className={focusedMonth === null ? "btn btn--small btn--active" : "btn btn--small"}
+            onClick={() => setFocusedMonth(null)}
           >
-            {focusedMonth === i && activeIndicator}
-            {name.slice(0, 3)}
+            {focusedMonth === null && activeIndicator}
+            Year
           </button>
-        ))}
-        <div className="zoom-sep" />
-        <button className="btn btn--small" onClick={onToggleClock}>
-          {twelveHour ? "24hr" : "12hr"}
-        </button>
-        <button className="btn btn--small" onClick={onToggleGrid}>
-          {showGrid ? "No grid" : "Grid"}
-        </button>
-      </div>
+          {MONTH_NAMES.map((name, i) => (
+            <button
+              key={name}
+              className={focusedMonth === i ? "btn btn--small btn--active" : "btn btn--small"}
+              onClick={() => {
+                setFocusedMonth(i);
+                const idx = days.findIndex((d) => d.month === i);
+                if (idx >= 0) onScrub(idx);
+              }}
+            >
+              {focusedMonth === i && activeIndicator}
+              {name.slice(0, 3)}
+            </button>
+          ))}
+          <div className="zoom-sep" />
+          <button className="btn btn--small" onClick={onToggleClock}>
+            {twelveHour ? "24hr" : "12hr"}
+          </button>
+          <button className="btn btn--small" onClick={onToggleGrid}>
+            {showGrid ? "No grid" : "Grid"}
+          </button>
+        </div>
+      )}
     </div>
   );
 }

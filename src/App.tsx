@@ -87,6 +87,7 @@ export default function App() {
         twelveHour={twelveHour}
         onToggleClock={() => setTwelveHour((v) => !v)}
         onToggleGrid={() => setShowGrid((v) => !v)}
+        bare={picking}
       />
 
       {picking && (

@@ -1,12 +1,13 @@
 /* ── Full-screen location picker ─────────────────────────────────────────── */
+/* No background here on purpose — the SunChart canvas underneath (night sky
+   + stars, with its sunrise/sunset visual suppressed while picking) shows
+   through as the backdrop. */
 .picker-overlay {
     --ani-duration: 0.3s;
 
     position: fixed;
     inset: 0;
     z-index: 100;
-    background: var(--surface);
-    backdrop-filter: blur(40px);
     display: flex;
     align-items: center;
     justify-content: center;

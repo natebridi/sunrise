@@ -1,8 +1,5 @@
 /* ── Card base ──────────────────────────────────────────────────────── */
 .card {
-  background: var(--surface);
-  border: 1px solid var(--border-soft);
-  border-radius: 14px;
   font-family: var(--font);
 }
 
@@ -14,9 +11,15 @@
   right: 16px;
   z-index: 10;
   display: flex;
-  gap: 10px;
+  gap: 1rem;
   align-items: stretch;
   pointer-events: none;
+  max-width: 70rem;
+  margin-inline: auto;
+
+  @media(width > 1000px) {
+      gap: 5rem;
+  }
 }
 
 .floating-ui > * {
@@ -30,6 +33,7 @@
   min-width: 0;
   display: grid;
   justify-content: stretch;
+  padding: 1rem;
 }
 
 .stats-cols {
@@ -46,15 +50,12 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding: 1rem;
 }
 
 .stats-right {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  padding: 1rem;
-  border-left: 1px solid var(--border-soft);
   justify-self: stretch;
 }
 
@@ -141,16 +142,24 @@
   justify-content: space-between;
   gap: 8px;
   padding: 0.5rem 1rem;
+
+  @media (width > 1000px) {
+      padding: 1rem 0 0;
+  }
 }
 
 .location-name-text {
   font-size: 0.82rem;
-  font-weight: 600;
+  font-weight: 400;
   color: var(--text-primary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   min-width: 0;
+
+  @media (width > 1000px) {
+      font-size: var(--font-size-lg);
+  }
 }
 
 /* ── Year controls ────────────────────────────────────────────────────────── */
@@ -168,20 +177,34 @@
 
 .year-mini-stats {
   display: flex;
-  flex-direction: column;
-  padding-top: 6px;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: baseline;
 }
 
 .mini-stat-label {
-    margin-top: 3px;
+    margin-top: 8px;
     font-size: var(--font-size-xs);
     color: var(--text-secondary);
+    width: 5rem;
+
+    &::before {
+        content: '';
+        width: 100%;
+        flex-basis: 100%;
+    }
+
+    @media (width > 1000px) {
+        width: 6rem;
+        font-size: var(--font-size-sm);
+    }
 }
 
 .mini-stat-value {
     font-size: var(--font-size-xs);
     color: var(--text-primary);
     font-weight: 500;
+    min-width: calc(100% - 7rem);
 
     @media (width > 1000px) {
         font-size: var(--font-size-sm);
